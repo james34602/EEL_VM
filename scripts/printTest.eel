@@ -1,0 +1,10 @@
+rqrw = 22;
+ngfmnfng = 5000;
+idx = 0;
+csv_log_create(200, 2);
+loop(400,
+rqrw[idx] = idx + 1;
+ngfmnfng[idx] = idx * 2.0;
+csv_log_rec(rqrw[idx], ngfmnfng[idx]);
+csv_log_debug();
+idx += 1);

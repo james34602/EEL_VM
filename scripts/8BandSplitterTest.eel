@@ -1,0 +1,13 @@
+iirBPS = 0;
+reqSize = IIRBandSplitterInit(iirBPS, 48000, 180, 800, 1600, 2700, 5600, 6500, 10000);
+printf("Required memory size: %d\n", reqSize);
+kDelta = iirBPS + reqSize;
+kDelta[0] = 1;
+sigLen = 3200;
+bands = kDelta + sigLen;
+idx = 0;
+loop(sigLen,
+IIRBandSplitterProcess(iirBPS, kDelta[idx], bands[0], bands[1], bands[2], bands[3], bands[4], bands[5], bands[6], bands[7]);
+printf("%1.15f,%1.15f,%1.15f,%1.15f,%1.15f,%1.15f,%1.15f,%1.15f\n", bands[0], bands[1], bands[2], bands[3], bands[4], bands[5], bands[6], bands[7]);
+idx += 1);
+IIRBandSplitterClearState(iirBPS);

@@ -1,0 +1,29 @@
+function printMatrix(mat, rows, cols)
+(
+	i = 0;
+	loop(rows, j = 0; loop(cols, printf("%f ", mat[i * cols + j]); j += 1;); printf("\n"); i += 1;);
+);
+mat = 0;
+size = importFLTFromStr("
+		3, 2, 4,
+		-1, 1, 2,
+		9, 5, 10,
+		0.2, 1, -5", mat);
+m = 3;
+n = 4;
+printf("Rank: %d\n", rank(mat, n, m));
+mat2 = mat + m * n;
+size = importFLTFromStr("
+	0., 0.4, -0.12, 0.4,
+	-0.4, 0.2, 0.214, -0.142,
+	0.3825, 0.42141, -0.1248, 1.4,
+	-0.214, 0.51, -2.42, 0.2", mat2);
+m2 = 4;
+n2 = 4;
+printf("Determinant: %1.14f\n", det(mat2, n2, m2));
+printf("mat[%d][%d]:\n", m, n);
+matTrans = mat2 + m2 * n2;
+printMatrix(mat, n, m);
+transpose(mat, n, m, matTrans);
+printf("transposed mat[%d][%d]:\n", n, m);
+printMatrix(matTrans, m, n);

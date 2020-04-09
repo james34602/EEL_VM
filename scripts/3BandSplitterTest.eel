@@ -1,0 +1,15 @@
+iirBPS = 0;
+reqSize = IIRBandSplitterInit(iirBPS, 48000, 4000, 12000);
+printf("Required memory size: %d\n", reqSize);
+kDelta = iirBPS + reqSize;
+kDelta[0] = 1;
+sigLen = 1024;
+low = 0;
+mid = 0;
+high = 0;
+idx = 0;
+loop(sigLen,
+IIRBandSplitterProcess(iirBPS, kDelta[idx], low, mid, high);
+printf("%1.15f,%1.15f,%1.15f\n", low, mid, high);
+idx += 1);
+IIRBandSplitterClearState(iirBPS);

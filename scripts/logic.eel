@@ -1,0 +1,19 @@
+adsa =3;
+nuaaa2 = 2412;
+flt12 = -30.21;
+idx = 0;
+break = 0;
+while (1 && !break)
+(
+printf("fd2r2sa:%d %d %1.5f\n", adsa, nuaaa2, flt12);
+printf("rges %1.8f %1.8f5y4\n", $PI, 0.1231);
+printf("rfas %1.8f uytr%1.8f\n", $PI, 1240.1231);
+printf(".,.es %1.8f %1.8f\n", $E, -4560.1231);
+printf("gs156d %1.8f %1.8f\n", $PI, 1421.1231);
+printf("tws %1.8f fsa%1.8f\n", $PI, 520.1231);
+printf("678%1.8f %1.8f\n", $PI, 8560.1231);
+printf("rfa453s %1.8fhtbfg %1.8f\n", $PI, 10.1231);
+idx+=1;
+idx > 100 ? break = 1;
+);
+printf("gs156d %1.8f %1.8f\n", $PI, 1421.1231);

@@ -1,0 +1,7 @@
+fsa=360;
+idx=0;
+loop(36,
+fsa[idx] = idx;
+idx += 1);
+idx = 0;
+loop(36, printf("%1.14f\n", fsa[idx]); idx += 1);

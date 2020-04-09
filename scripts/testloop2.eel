@@ -1,0 +1,15 @@
+aryLen = 99999999;
+idx = 0;
+break = 0;
+printf("Loop 1\n");
+
+while (1 && !break)
+(
+idx += 1;
+idx == 21474836 ?
+(
+break = 1;
+printf("%d %d\n", idx, break);
+) :
+break = 0;
+);

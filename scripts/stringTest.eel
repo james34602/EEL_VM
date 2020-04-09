@@ -1,0 +1,18 @@
+printf("Hello world\n");
+
+testStr1 = "Oh my";
+testStr2 = "frog";
+
+testString3 = "";
+sprintf(testString3, "%s 33 %s", testStr1, testStr2);
+printf(testString3);
+lllen=strlen(testString3);
+printf("String length of testString3: %d\n", lllen);
+
+str3 = "Oh my 33 frogfff";
+printf("\nstring cmp: %d", strcmp(str3, testString3));
+
+rem1 = match("*test*", "this is a Test"); // search for first parameter regex-style in second parameter
+rem2 = matchi("*test*", "this is a Test"); // search for first parameter regex-style in second parameter (case insensitive)
+
+printf("\nCond1: %s\nCond2: %s\n", rem1 ? "Match" : "Doesn't match", rem2 ? "Match" : "Doesn't match");

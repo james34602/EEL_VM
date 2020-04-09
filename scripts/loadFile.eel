@@ -1,0 +1,30 @@
+size1 = loadFileToSink("C:\\Users\\James34602\\Downloads\\eel2\\test\\d.txt", 3);
+size2 = loadFileToSink("C:\\Users\\James34602\\Downloads\\eel2\\test\\afs.txt", 1);
+printf("%d %d\n", size1, size2);
+ptr1 = 20;
+ptr2 = ptr1 + size1;
+err1 = getValuesFromSink(ptr1, 3);
+err2 = getValuesFromSink(ptr2, 1);
+
+idx = 0;
+printf("Print array 1\n");
+loop(size1,
+printf("%f\n", ptr1[idx]);
+idx += 1;
+);
+
+idx = 0;
+printf("Print array 2\n");
+loop(size2,
+printf("%f\n", ptr2[idx]);
+idx += 1;
+);
+
+idx = 0;
+ptr3 = ptr2 + size2;
+size3 = importFLTFromStr("-1.1515155899, 3.544848441", ptr3);
+printf("Print array 3\n");
+loop(size3,
+printf("%f\n", ptr3[idx]);
+idx += 1;
+);

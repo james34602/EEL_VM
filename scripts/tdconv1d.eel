@@ -1,0 +1,11 @@
+input = 0;
+inLen = importFLTFromStr("0.2, 0.3", input);
+zeroPad = 50;
+coeffs = input + inLen + zeroPad;
+hLen = importFLTFromStr("1.0, -0.2", coeffs);
+ptr = coeffs + hLen;
+req = FIRInit(ptr, hlen);
+idx = 0;
+loop(inLen + zeroPad,
+printf("%f\n", FIRProcess(ptr, input[idx], coeffs));
+idx+=1;);

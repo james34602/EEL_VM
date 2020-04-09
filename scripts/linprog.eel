@@ -1,0 +1,18 @@
+flin = 0;
+size2 = importFLTFromStr("-1,-0.33333333333333333333333333333333", flin);
+Alin = flin + size2;
+size3 = importFLTFromStr("1,1,
+1,0.25,
+1,-1,
+-0.25,-1,
+-1,-1,
+-1,1", Alin);
+blin = Alin + size3;
+size4 = importFLTFromStr("2,1,2,1,-1,2", blin);
+x = blin + size4;
+problemLen = 2;
+constraintLen = 6;
+fval = linprog(flin, Alin, blin, problemLen, constraintLen, x);
+printf("fval = %f\nSolution of linear programming:\n", fval);
+idx = 0;
+loop(problemLen, printf("%f\n", x[idx]); idx += 1);

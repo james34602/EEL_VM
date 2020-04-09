@@ -1,0 +1,10 @@
+input = 0;
+inLen = importFLTFromStr("1.0, 2.3", input);
+zeroPad = 50;
+ptr = inLen + zeroPad;
+req = fractionalDelayLineInit(ptr, 1024);
+fractionalDelayLineSetDelay(ptr, 2.4);
+idx = 0;
+loop(zeroPad,
+printf("%f\n", fractionalDelayLineProcess(ptr, input[idx]));
+idx+=1;);

@@ -1,0 +1,23 @@
+aryLen = 99999999;
+idx = 0;
+break = 0;
+printf("Loop 1\n");
+
+while (idx < aryLen && !break)
+(
+idx += 1;
+idx == 300 ? break = 1 : break = 0;
+printf("%d %d\n", idx, break);
+);
+
+printf("\nLoop 2\n");
+
+count = 500;
+idx = 0;
+
+loop(count, 
+fff += 0.1;
+aaaa -= 0.55;
+fff <= 0.8 ? idx += 1;
+);
+printf("%d\n", idx);

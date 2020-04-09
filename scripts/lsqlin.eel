@@ -1,0 +1,35 @@
+C = 0;
+size1 = importFLTFromStr("
+0.9501    0.7620    0.6153    0.4057
+0.2311    0.4564    0.7919    0.9354
+0.6068    0.0185    0.9218    0.9169
+0.4859    0.8214    0.7382    0.4102
+0.8912    0.4447    0.1762    0.8936
+", C);
+d = C + size1;
+size2 = importFLTFromStr("
+0.0578
+0.3528
+0.8131
+0.0098
+0.1388", d);
+A = d + size2;
+size3 = importFLTFromStr("
+0.2027    0.2721    0.7467    0.4659
+0.1987    0.1988    0.4450    0.4186
+0.6037    0.0152    0.9318    0.8462
+", A);
+b = A + size3;
+size4 = importFLTFromStr("
+0.5251
+0.2026
+0.6721
+", b);
+x = b + size4;
+n = 5;
+m = 4;
+constraintLen = 3;
+fval = lsqlin(C, d, A, b, n, m, constraintLen, x);
+printf("fval = %f\nSolution of constrainted least square:\n", fval);
+idx = 0;
+loop(m, printf("%f\n", x[idx]); idx += 1);
