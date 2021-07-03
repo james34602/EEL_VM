@@ -3,9 +3,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdint.h>
 #include <math.h>
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+typedef int32_t YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
@@ -13,10 +14,10 @@ typedef int YYSTYPE;
 #if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
 typedef struct YYLTYPE
 {
-	int first_line;
-	int first_column;
-	int last_line;
-	int last_column;
+	int32_t first_line;
+	int32_t first_column;
+	int32_t last_line;
+	int32_t last_column;
 } YYLTYPE;
 #define yyltype YYLTYPE /* obsolescent; will be withdrawn */
 #define YYLTYPE_IS_DECLARED 1
@@ -97,9 +98,9 @@ static const char *nseel_skip_space_and_comments(const char *p, const char *endp
 	}
 }
 // removes any escaped characters, also will convert pairs delim_char into single delim_chars
-int nseel_filter_escaped_string(char *outbuf, int outbuf_sz, const char *rdptr, size_t rdptr_size, char delim_char)
+int32_t nseel_filter_escaped_string(char *outbuf, int32_t outbuf_sz, const char *rdptr, size_t rdptr_size, char delim_char)
 {
-	int outpos = 0;
+	int32_t outpos = 0;
 	const char *rdptr_end = rdptr + rdptr_size;
 	while (rdptr < rdptr_end && outpos < outbuf_sz - 1)
 	{
@@ -165,7 +166,7 @@ int nseel_filter_escaped_string(char *outbuf, int outbuf_sz, const char *rdptr, 
 	return outpos;
 }
 // state can be NULL, it will be set if finished with unterminated thing: 1 for multiline comment, ' or " for string
-const char *nseel_simple_tokenizer(const char **ptr, const char *endptr, int *lenOut, int *state)
+const char *nseel_simple_tokenizer(const char **ptr, const char *endptr, int32_t *lenOut, int32_t *state)
 {
 	const char *p = *ptr;
 	const char *rv = p;
@@ -248,12 +249,12 @@ const char *nseel_simple_tokenizer(const char **ptr, const char *endptr, int *le
 		p++;
 	}
 	*ptr = p;
-	*lenOut = (int)(p - rv);
+	*lenOut = (int32_t)(p - rv);
 	return p > rv ? rv : NULL;
 }
-int nseellex(opcodeRec **output, YYLTYPE * yylloc_param, compileContext *scctx)
+int32_t nseellex(opcodeRec **output, YYLTYPE * yylloc_param, compileContext *scctx)
 {
-	int rv = 0, toklen = 0;
+	int32_t rv = 0, toklen = 0;
 	const char *rdptr = scctx->rdbuf;
 	const char *endptr = scctx->rdbuf_end;
 	const char *tok = nseel_simple_tokenizer(&rdptr, endptr, &toklen, NULL);
@@ -306,7 +307,7 @@ int nseellex(opcodeRec **output, YYLTYPE * yylloc_param, compileContext *scctx)
 			}
 			else
 			{
-				int pcnt = rv == '.';
+				int32_t pcnt = rv == '.';
 				while (rdptr < endptr && (rv = rdptr[0]) && ((rv >= '0' && rv <= '9') || (rv == '.' && !pcnt++))) rdptr++;
 			}
 			*output = nseel_translate(scctx, tok, rdptr - tok);
@@ -387,12 +388,12 @@ int nseellex(opcodeRec **output, YYLTYPE * yylloc_param, compileContext *scctx)
 		}
 	}
 	scctx->rdbuf = rdptr;
-	yylloc_param->first_column = (int)(tok - scctx->rdbuf_start);
+	yylloc_param->first_column = (int32_t)(tok - scctx->rdbuf_start);
 	return rv;
 }
 void nseelerror(YYLTYPE *pos, compileContext *ctx, const char *str)
 {
-	ctx->errVar = pos->first_column > 0 ? pos->first_column : (int)(ctx->rdbuf_end - ctx->rdbuf_start);
+	ctx->errVar = pos->first_column > 0 ? pos->first_column : (int32_t)(ctx->rdbuf_end - ctx->rdbuf_start);
 }
 /* Substitute the variable and function names.  */
 #define yyparse nseelparse
@@ -423,7 +424,7 @@ void nseelerror(YYLTYPE *pos, compileContext *ctx, const char *str)
 # define YYTOKEN_TABLE 0
 #endif
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+typedef int32_t YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
@@ -431,10 +432,10 @@ typedef int YYSTYPE;
 #if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
 typedef struct YYLTYPE
 {
-  int first_line;
-  int first_column;
-  int last_line;
-  int last_column;
+  int32_t first_line;
+  int32_t first_column;
+  int32_t last_line;
+  int32_t last_column;
 } YYLTYPE;
 # define yyltype YYLTYPE /* obsolescent; will be withdrawn */
 # define YYLTYPE_IS_DECLARED 1
@@ -442,33 +443,6 @@ typedef struct YYLTYPE
 #endif
 /* Copy the second part of user declarations.  */
 /* Line 216 of yacc.c.  */
-#line 193 "y.tab.c"
-#ifdef short
-# undef short
-#endif
-#ifdef YYTYPE_UINT8
-typedef YYTYPE_UINT8 yytype_uint8;
-#else
-typedef unsigned char yytype_uint8;
-#endif
-#ifdef YYTYPE_INT8
-typedef YYTYPE_INT8 yytype_int8;
-#elif (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
-typedef signed char yytype_int8;
-#else
-typedef short int yytype_int8;
-#endif
-#ifdef YYTYPE_UINT16
-typedef YYTYPE_UINT16 yytype_uint16;
-#else
-typedef unsigned short int yytype_uint16;
-#endif
-#ifdef YYTYPE_INT16
-typedef YYTYPE_INT16 yytype_int16;
-#else
-typedef short int yytype_int16;
-#endif
 #ifndef YYSIZE_T
 # ifdef __SIZE_TYPE__
 #  define YYSIZE_T __SIZE_TYPE__
@@ -479,7 +453,7 @@ typedef short int yytype_int16;
 #  include <stddef.h> /* INFRINGES ON USER NAME SPACE */
 #  define YYSIZE_T size_t
 # else
-#  define YYSIZE_T unsigned int
+#  define YYSIZE_T uint32_t
 # endif
 #endif
 #define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
@@ -506,12 +480,12 @@ typedef short int yytype_int16;
 #else
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
-static int
-YYID (int i)
+static int32_t
+YYID (int32_t i)
 #else
-static int
+static int32_t
 YYID (i)
-    int i;
+    int32_t i;
 #endif
 {
   return i;
@@ -554,7 +528,7 @@ void free(void *); /* INFRINGES ON USER NAME SPACE */
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  yytype_int16 yyss;
+  int16_t yyss;
   YYSTYPE yyvs;
     YYLTYPE yyls;
 };
@@ -563,7 +537,7 @@ union yyalloc
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
 # define YYSTACK_BYTES(N) \
-     ((N) * (sizeof (yytype_int16) + sizeof (YYSTYPE) + sizeof (YYLTYPE)) \
+     ((N) * (sizeof (int16_t) + sizeof (YYSTYPE) + sizeof (YYLTYPE)) \
       + 2 * YYSTACK_GAP_MAXIMUM)
 /* Copy COUNT objects from FROM to TO.  The source and destination do
    not overlap.  */
@@ -614,9 +588,9 @@ union yyalloc
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   280
 #define YYTRANSLATE(YYX)						\
-  ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
+  ((uint32_t) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 /* YYTRANSLATE[YYLEX] -- Bison symbol number corresponding to YYLEX.  */
-static const yytype_uint8 yytranslate[] =
+static const uint8_t yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -649,7 +623,7 @@ static const yytype_uint8 yytranslate[] =
       25
 };
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
-static const yytype_uint8 yyr1[] =
+static const uint8_t yyr1[] =
 {
        0,    47,    48,    48,    49,    49,    50,    50,    50,    50,
       50,    50,    50,    50,    50,    51,    51,    51,    51,    52,
@@ -661,7 +635,7 @@ static const yytype_uint8 yyr1[] =
       64,    64,    64,    65
 };
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
-static const yytype_uint8 yyr2[] =
+static const uint8_t yyr2[] =
 {
        0,     2,     1,     3,     1,     2,     1,     3,     7,     4,
        3,     6,     8,     3,     4,     1,     1,     1,     1,     1,
@@ -675,7 +649,7 @@ static const yytype_uint8 yyr2[] =
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
    STATE-NUM when YYTABLE doesn't specify something else to do.  Zero
    means the default is an error.  */
-static const yytype_uint8 yydefact[] =
+static const uint8_t yydefact[] =
 {
        0,    15,     6,     4,    16,     0,     0,     0,     0,    17,
       18,    19,    32,    36,    38,    42,    44,    46,    48,    50,
@@ -692,7 +666,7 @@ static const yytype_uint8 yydefact[] =
        0,     0,     2,     8,    12,     0,     3
 };
 /* YYDEFGOTO[NTERM-NUM].  */
-static const yytype_int8 yydefgoto[] =
+static const int8_t yydefgoto[] =
 {
       -1,   121,     9,    10,    11,    12,    13,    14,    15,    16,
       17,    18,    19,    20,    21,    22,    23,   122,    25
@@ -700,7 +674,7 @@ static const yytype_int8 yydefgoto[] =
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
 #define YYPACT_NINF -38
-static const yytype_int8 yypact[] =
+static const int8_t yypact[] =
 {
       70,   -38,   -21,    12,   -11,    70,    70,    70,    70,   -38,
      102,     6,   -38,   -38,    50,    19,     4,     8,    14,    25,
@@ -717,7 +691,7 @@ static const yytype_int8 yypact[] =
       54,    77,   -23,   -38,   -38,    70,   -38
 };
 /* YYPGOTO[NTERM-NUM].  */
-static const yytype_int8 yypgoto[] =
+static const int8_t yypgoto[] =
 {
      -38,   -10,   111,   -38,   -38,   -38,    11,    61,    79,    76,
       80,    75,    58,    78,   -37,   -38,   -27,     0,   -38
@@ -727,7 +701,7 @@ static const yytype_int8 yypgoto[] =
    number is the opposite.  If zero, do what YYDEFACT says.
    If YYTABLE_NINF, syntax error.  */
 #define YYTABLE_NINF -1
-static const yytype_uint8 yytable[] =
+static const uint8_t yytable[] =
 {
       24,    71,    72,   125,    28,    30,    26,    74,    75,    76,
       77,    78,    79,    80,    81,    82,    83,    31,    32,    33,
@@ -745,7 +719,7 @@ static const yytype_uint8 yytable[] =
        0,    92,     0,    43,    97,    98,    99,   100,   101,   102,
      103,   104
 };
-static const yytype_int8 yycheck[] =
+static const int8_t yycheck[] =
 {
        0,    28,    29,    26,    15,     5,    27,    34,    35,    36,
       37,    38,    39,    40,    41,    42,    43,     6,     7,     8,
@@ -858,12 +832,12 @@ while (YYID (0))
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp, compileContext* context)
+yydestruct (const char *yymsg, int32_t yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp, compileContext* context)
 #else
 static void
 yydestruct (yymsg, yytype, yyvaluep, yylocationp, context)
     const char *yymsg;
-    int yytype;
+    int32_t yytype;
     YYSTYPE *yyvaluep;
     YYLTYPE *yylocationp;
     compileContext* context;
@@ -891,15 +865,15 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp, context)
 /* Prevent warnings from -Wmissing-prototypes.  */
 #ifdef YYPARSE_PARAM
 #if defined __STDC__ || defined __cplusplus
-int yyparse (void *YYPARSE_PARAM);
+int32_t yyparse (void *YYPARSE_PARAM);
 #else
-int yyparse ();
+int32_t yyparse ();
 #endif
 #else /* ! YYPARSE_PARAM */
 #if defined __STDC__ || defined __cplusplus
-int yyparse (compileContext* context);
+int32_t yyparse (compileContext* context);
 #else
-int yyparse ();
+int32_t yyparse ();
 #endif
 #endif /* ! YYPARSE_PARAM */
 /*----------.
@@ -908,40 +882,40 @@ int yyparse ();
 #ifdef YYPARSE_PARAM
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
-int
+int32_t
 yyparse (void *YYPARSE_PARAM)
 #else
-int
+int32_t
 yyparse (YYPARSE_PARAM)
     void *YYPARSE_PARAM;
 #endif
 #else /* ! YYPARSE_PARAM */
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
-int
+int32_t
 yyparse (compileContext* context)
 #else
-int
+int32_t
 yyparse (context)
     compileContext* context;
 #endif
 #endif
 {
   /* The look-ahead symbol.  */
-int yychar;
+int32_t yychar;
 /* The semantic value of the look-ahead symbol.  */
 YYSTYPE yylval;
 /* Number of syntax errors so far.  */
-int yynerrs;
+int32_t yynerrs;
 /* Location data for the look-ahead symbol.  */
 YYLTYPE yylloc;
-  int yystate;
-  int yyn;
-  int yyresult;
+  int32_t yystate;
+  int32_t yyn;
+  int32_t yyresult;
   /* Number of tokens to shift before error messages enabled.  */
-  int yyerrstatus;
+  int32_t yyerrstatus;
   /* Look-ahead token as an internal (translated) token number.  */
-  int yytoken = 0;
+  int32_t yytoken = 0;
 #if YYERROR_VERBOSE
   /* Buffer for error messages, and its allocated size.  */
   char yymsgbuf[128];
@@ -955,9 +929,9 @@ YYLTYPE yylloc;
      Refer to the stacks thru separate pointers, to allow yyoverflow
      to reallocate them elsewhere.  */
   /* The state stack.  */
-  yytype_int16 yyssa[YYINITDEPTH];
-  yytype_int16 *yyss = yyssa;
-  yytype_int16 *yyssp;
+  int16_t yyssa[YYINITDEPTH];
+  int16_t *yyss = yyssa;
+  int16_t *yyssp;
   /* The semantic value stack.  */
   YYSTYPE yyvsa[YYINITDEPTH];
   YYSTYPE *yyvs = yyvsa;
@@ -976,7 +950,7 @@ YYLTYPE yylloc;
   YYLTYPE yyloc;
   /* The number of symbols on the RHS of the reduced rule.
      Keep to zero when no symbol should be popped.  */
-  int yylen = 0;
+  int32_t yylen = 0;
   YYDPRINTF ((stderr, "Starting parse\n"));
   yystate = 0;
   yyerrstatus = 0;
@@ -1014,7 +988,7 @@ YYLTYPE yylloc;
 	   these so that the &'s don't force the real ones into
 	   memory.  */
 	YYSTYPE *yyvs1 = yyvs;
-	yytype_int16 *yyss1 = yyss;
+	int16_t *yyss1 = yyss;
 	YYLTYPE *yyls1 = yyls;
 	/* Each stack pointer address is followed by the size of the
 	   data in use in that stack, in bytes.  This used to be a
@@ -1040,7 +1014,7 @@ YYLTYPE yylloc;
       if (YYMAXDEPTH < yystacksize)
 	yystacksize = YYMAXDEPTH;
       {
-	yytype_int16 *yyss1 = yyss;
+	int16_t *yyss1 = yyss;
 	union yyalloc *yyptr =
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
@@ -1058,7 +1032,7 @@ YYLTYPE yylloc;
       yyvsp = yyvs + yysize - 1;
       yylsp = yyls + yysize - 1;
       YYDPRINTF ((stderr, "Stack size increased to %lu\n",
-		  (unsigned long int) yystacksize));
+		  (unsigned long int32_t) yystacksize));
       if (yyss + yystacksize - 1 <= yyssp)
 	YYABORT;
     }
@@ -1178,7 +1152,7 @@ yyreduce:
   case 8:
 #line 72 "eel2.y"
     {
-          int err;
+          int32_t err;
   	  if (!((yyval) = nseel_setCompiledFunctionCallParameters(context,(yyvsp[(1) - (7)]), (yyvsp[(3) - (7)]), 0, 0, (yyvsp[(6) - (7)]), &err))) 
           { 
             if (err == -1) yyerror(&yylsp[-2], context, "");
@@ -1191,7 +1165,7 @@ yyreduce:
   case 9:
 #line 84 "eel2.y"
     {
-          int err;
+          int32_t err;
   	  if (!((yyval) = nseel_setCompiledFunctionCallParameters(context,(yyvsp[(1) - (4)]), (yyvsp[(3) - (4)]), 0, 0, 0, &err))) 
           { 
             if (err == 0) yyerror(&yylsp[-3], context, "");
@@ -1203,7 +1177,7 @@ yyreduce:
   case 10:
 #line 94 "eel2.y"
     {
-          int err;
+          int32_t err;
   	  if (!((yyval) = nseel_setCompiledFunctionCallParameters(context,(yyvsp[(1) - (3)]), nseel_createCompiledValue(context,0.0), 0, 0, 0,&err))) 
           { 
             if (err == 0) yyerror(&yylsp[-2], context, ""); // function not found
@@ -1215,7 +1189,7 @@ yyreduce:
   case 11:
 #line 104 "eel2.y"
     {
-          int err;
+          int32_t err;
   	  if (!((yyval) = nseel_setCompiledFunctionCallParameters(context,(yyvsp[(1) - (6)]), (yyvsp[(3) - (6)]), (yyvsp[(5) - (6)]), 0, 0,&err))) 
           { 
             if (err == 0) yyerror(&yylsp[-5], context, "");
@@ -1228,7 +1202,7 @@ yyreduce:
   case 12:
 #line 115 "eel2.y"
     {
-          int err;
+          int32_t err;
   	  if (!((yyval) = nseel_setCompiledFunctionCallParameters(context,(yyvsp[(1) - (8)]), (yyvsp[(3) - (8)]), (yyvsp[(5) - (8)]), (yyvsp[(7) - (8)]), 0, &err))) 
           { 
             if (err == 0) yyerror(&yylsp[-7], context, "");

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <assert.h>
 #include "s_str.h"
 #define access_struct(pointer_to_void)      (*(struct S_STRING_STRUCT *) pointer_to_void)
@@ -69,14 +70,30 @@ s_str s_str_create_from_c_str(const char *const c_str_ptr){
     if(c_str_ptr == NULL){
         new_str = s_str_create();
     }else{
-        new_str = malloc(sizeof(struct S_STRING_STRUCT) + sizeof(char) * (strlen(c_str_ptr) + 1));
+		size_t length = strlen(c_str_ptr) + 1;
+        new_str = malloc(sizeof(struct S_STRING_STRUCT) + sizeof(char) * length);
         if(new_str != NULL){
-            access_struct(new_str).capacity = strlen(c_str_ptr) + 1;
-            access_struct(new_str).size = strlen(c_str_ptr) + 1;
-            memcpy(access_struct(new_str).string, c_str_ptr, sizeof(char) * (strlen(c_str_ptr) + 1));
+            access_struct(new_str).capacity = length;
+            access_struct(new_str).size = length;
+            memcpy(access_struct(new_str).string, c_str_ptr, sizeof(char) * length);
         }
     }
     return new_str;
+}
+s_str s_str_create_from_c_str_0Inc(const char *const c_str_ptr, const size_t length) {
+	s_str new_str;
+	if (c_str_ptr == NULL) {
+		new_str = s_str_create();
+	}
+	else {
+		new_str = malloc(sizeof(struct S_STRING_STRUCT) + sizeof(char) * (length + 1));
+		if (new_str != NULL) {
+			access_struct(new_str).capacity = length + 1;
+			access_struct(new_str).size = length + 1;
+			memcpy(access_struct(new_str).string, c_str_ptr, sizeof(char) * (length + 1));
+		}
+	}
+	return new_str;
 }
 s_str s_str_create_from_s_str(const s_str *const s_str_ptr_for_create){
     s_str new_str;
@@ -288,7 +305,7 @@ size_t s_str_length(const s_str *const this_){
     assert(this_ != NULL && *this_ != NULL);
     return strlen(access_struct(*this_).string);
 }
-int s_str_empty(const s_str *const this_){
+int32_t s_str_empty(const s_str *const this_){
     assert(this_ != NULL && *this_ != NULL);
     if(access_struct(*this_).size == 1){
         return 1;
@@ -615,31 +632,31 @@ void s_str_foreach_all(const s_str *this_, void (*const fptr)(char *)){
         fptr(access_struct(*this_).string + counter);
     }
 }
-int s_str_compare_c_str(const s_str *const this_, const char *const c_str_ptr){
+int32_t s_str_compare_c_str(const s_str *const this_, const char *const c_str_ptr){
     assert(this_ != NULL && *this_ != NULL && c_str_ptr != NULL);
     if(access_struct(*this_).size - 1 > strlen(c_str_ptr)){
-        const int compared_val = memcmp(access_struct(*this_).string, c_str_ptr, sizeof(char) * strlen(c_str_ptr));
+        const int32_t compared_val = memcmp(access_struct(*this_).string, c_str_ptr, sizeof(char) * strlen(c_str_ptr));
         if(compared_val == 0){
             return 1;
         }else{
             return compared_val;
         }
     }else if(access_struct(*this_).size - 1 < strlen(c_str_ptr)){
-        const int compared_val = memcmp(access_struct(*this_).string, c_str_ptr, sizeof(char) * (access_struct(*this_).size - 1));
+        const int32_t compared_val = memcmp(access_struct(*this_).string, c_str_ptr, sizeof(char) * (access_struct(*this_).size - 1));
         if(compared_val == 0){
             return -1;
         }else{
             return compared_val;
         }
     }else{
-        const int compared_val = memcmp(access_struct(*this_).string, c_str_ptr, sizeof(char) * (access_struct(*this_).size - 1));
+        const int32_t compared_val = memcmp(access_struct(*this_).string, c_str_ptr, sizeof(char) * (access_struct(*this_).size - 1));
         return compared_val;
     }
 }
-int s_str_compare_s_str(const s_str *const this_, const s_str *const s_str_ptr_for_compare){
+int32_t s_str_compare_s_str(const s_str *const this_, const s_str *const s_str_ptr_for_compare){
     assert(this_ != NULL && *this_ != NULL && s_str_ptr_for_compare != NULL && *s_str_ptr_for_compare != NULL);
     if(access_struct(*this_).size - 1 > access_struct(*s_str_ptr_for_compare).size - 1){
-        const int compared_val = memcmp(access_struct(*this_).string, access_struct(*s_str_ptr_for_compare).string, 
+        const int32_t compared_val = memcmp(access_struct(*this_).string, access_struct(*s_str_ptr_for_compare).string, 
             sizeof(char) * (access_struct(*s_str_ptr_for_compare).size - 1));
         if(compared_val == 0){
             return 1;
@@ -647,7 +664,7 @@ int s_str_compare_s_str(const s_str *const this_, const s_str *const s_str_ptr_f
             return compared_val;
         }
     }else if(access_struct(*this_).size - 1 < access_struct(*s_str_ptr_for_compare).size - 1){
-        const int compared_val = memcmp(access_struct(*this_).string, access_struct(*s_str_ptr_for_compare).string, 
+        const int32_t compared_val = memcmp(access_struct(*this_).string, access_struct(*s_str_ptr_for_compare).string, 
             sizeof(char) * (access_struct(*this_).size - 1));
         if(compared_val == 0){
             return -1;
@@ -655,12 +672,12 @@ int s_str_compare_s_str(const s_str *const this_, const s_str *const s_str_ptr_f
             return compared_val;
         }
     }else{
-        const int compared_val = memcmp(access_struct(*this_).string, access_struct(*s_str_ptr_for_compare).string, 
+        const int32_t compared_val = memcmp(access_struct(*this_).string, access_struct(*s_str_ptr_for_compare).string, 
             sizeof(char) * (access_struct(*this_).size - 1));
         return compared_val;
     }
 }
-void s_str_sort(s_str *const this_, int (*const compare)(const void *, const void *)){
+void s_str_sort(s_str *const this_, int32_t (*const compare)(const void *, const void *)){
     assert(this_ != NULL && *this_ != NULL && compare != NULL);
     if(access_struct(*this_).size > 2){
         qsort(access_struct(*this_).string, access_struct(*this_).size - 1, sizeof(char), compare);

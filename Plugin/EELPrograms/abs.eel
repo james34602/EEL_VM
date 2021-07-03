@@ -1,0 +1,16 @@
+desc: MS centre boost
+
+@init
+function db2mag(db)
+(
+  pow(10, db / 20);
+);
+function mag2db(mag)
+(
+  20 * log10(mag);
+);
+boost=db2mag(3); // Boost 3 dB
+
+@sample
+spl0 = hypot(spl0, spl1);
+spl1 = spl0;

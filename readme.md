@@ -18,7 +18,7 @@ EEL2 is a language that powers [REAPER](https://www.reaper.fm/)'s [JSFX](https:/
 
 The core of EEL2 has many similarities to C but is distictly different. Some notable qualities of this language are:
 
-  - Variables do not need to be declared, are by default global, and are all double-precision floating point.
+  - Variables do not need to be declared, are by default global, and are all single-precision floating point.
   - Parentheses "(" and ")" can be used to clarify precidence, contain parameters for functions, and collect multiple statements into a single statement.
   - A semicolon ";" is used to separate statements from eachother (including within parentheses).
   - A virtual local address space of about 8 million words (queryable at runtime via [__memtop()](#func---memtop)) can be accessed via brackets "[" and "]".

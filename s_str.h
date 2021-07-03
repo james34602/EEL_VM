@@ -59,6 +59,7 @@ s_str s_str_create_from_multi_char(const size_t length, const char c);
  * Returns a unique and newly made s_str, or NULL if memory cannot be allocated to hold the s_str.
  */
 s_str s_str_create_from_c_str(const char *const c_str_ptr);
+s_str s_str_create_from_c_str_0Inc(const char *const c_str_ptr, const size_t length);
 /* Dynamically allocates memory to create a new s_str. The s_str MUST call s_str_destroy to free memory at some point.
  *
  * Takes in either the memory address of a s_str or NULL. If s_str_ptr_for_create == NULL, then the s_str is default initialized (i.e. the "string" it 

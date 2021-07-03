@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="Da7JKE" name="LiveProgrammableEffect" projectType="audioplug"
+              version="3.7.1" pluginFormats="buildStandalone,buildVST" pluginChannelConfigs="{6,6}"
+              companyName="James Fung" companyEmail="james34602@gmail.com"
+              pluginManufacturer="James34602" pluginName="LiveProg" pluginCode="jlpg"
+              defines="JUCE_DONT_AUTO_OPEN_MIDI_DEVICES_ON_MOBILE&#10;TURN_ON_VST"
+              jucerFormatVersion="1">
+  <MAINGROUP id="wVx5gn" name="LiveProgrammableEffect">
+    <GROUP id="{4B1B3607-B636-DAD6-EBE2-B958C1BDC23F}" name="Lua">
+      <FILE id="x70m9U" name="lapi.c" compile="1" resource="0" file="Source/Lua/lapi.c"/>
+      <FILE id="iUlCWo" name="lapi.h" compile="0" resource="0" file="Source/Lua/lapi.h"/>
+      <FILE id="bvLPvt" name="lauxlib.c" compile="1" resource="0" file="Source/Lua/lauxlib.c"/>
+      <FILE id="yLAXJk" name="lauxlib.h" compile="0" resource="0" file="Source/Lua/lauxlib.h"/>
+      <FILE id="UxTKXe" name="lbaselib.c" compile="1" resource="0" file="Source/Lua/lbaselib.c"/>
+      <FILE id="yjRkjm" name="lcode.c" compile="1" resource="0" file="Source/Lua/lcode.c"/>
+      <FILE id="XFAeR5" name="lcode.h" compile="0" resource="0" file="Source/Lua/lcode.h"/>
+      <FILE id="U1YsRi" name="lcorolib.c" compile="1" resource="0" file="Source/Lua/lcorolib.c"/>
+      <FILE id="ecxQ0v" name="lctype.c" compile="1" resource="0" file="Source/Lua/lctype.c"/>
+      <FILE id="w077S5" name="lctype.h" compile="0" resource="0" file="Source/Lua/lctype.h"/>
+      <FILE id="dmmfRd" name="ldblib.c" compile="1" resource="0" file="Source/Lua/ldblib.c"/>
+      <FILE id="pR2s2B" name="ldebug.c" compile="1" resource="0" file="Source/Lua/ldebug.c"/>
+      <FILE id="pI62lQ" name="ldebug.h" compile="0" resource="0" file="Source/Lua/ldebug.h"/>
+      <FILE id="onnpdk" name="ldo.c" compile="1" resource="0" file="Source/Lua/ldo.c"/>
+      <FILE id="aBv3ji" name="ldo.h" compile="0" resource="0" file="Source/Lua/ldo.h"/>
+      <FILE id="pFD7wh" name="ldump.c" compile="1" resource="0" file="Source/Lua/ldump.c"/>
+      <FILE id="lwpvQg" name="lfunc.c" compile="1" resource="0" file="Source/Lua/lfunc.c"/>
+      <FILE id="gmCwux" name="lfunc.h" compile="0" resource="0" file="Source/Lua/lfunc.h"/>
+      <FILE id="RCg5wI" name="lgc.c" compile="1" resource="0" file="Source/Lua/lgc.c"/>
+      <FILE id="FNfCZE" name="lgc.h" compile="0" resource="0" file="Source/Lua/lgc.h"/>
+      <FILE id="xIbJRb" name="linit.c" compile="1" resource="0" file="Source/Lua/linit.c"/>
+      <FILE id="uJlth8" name="liolib.c" compile="1" resource="0" file="Source/Lua/liolib.c"/>
+      <FILE id="LW0Kge" name="ljumptab.h" compile="0" resource="0" file="Source/Lua/ljumptab.h"/>
+      <FILE id="IRcWm7" name="llex.c" compile="1" resource="0" file="Source/Lua/llex.c"/>
+      <FILE id="xnRv2l" name="llex.h" compile="0" resource="0" file="Source/Lua/llex.h"/>
+      <FILE id="FTZoRw" name="llimits.h" compile="0" resource="0" file="Source/Lua/llimits.h"/>
+      <FILE id="sbhMh9" name="lmathlib.c" compile="1" resource="0" file="Source/Lua/lmathlib.c"/>
+      <FILE id="OnPsC3" name="lmem.c" compile="1" resource="0" file="Source/Lua/lmem.c"/>
+      <FILE id="sCfZPx" name="lmem.h" compile="0" resource="0" file="Source/Lua/lmem.h"/>
+      <FILE id="eAfzrw" name="loadlib.c" compile="1" resource="0" file="Source/Lua/loadlib.c"/>
+      <FILE id="PJUx2B" name="lobject.c" compile="1" resource="0" file="Source/Lua/lobject.c"/>
+      <FILE id="BNEaSa" name="lobject.h" compile="0" resource="0" file="Source/Lua/lobject.h"/>
+      <FILE id="LWCjK2" name="lopcodes.c" compile="1" resource="0" file="Source/Lua/lopcodes.c"/>
+      <FILE id="zNywZ8" name="lopcodes.h" compile="0" resource="0" file="Source/Lua/lopcodes.h"/>
+      <FILE id="cwMEKp" name="lopnames.h" compile="0" resource="0" file="Source/Lua/lopnames.h"/>
+      <FILE id="tuMYlN" name="loslib.c" compile="1" resource="0" file="Source/Lua/loslib.c"/>
+      <FILE id="QKKR22" name="lparser.c" compile="1" resource="0" file="Source/Lua/lparser.c"/>
+      <FILE id="Eg0KoF" name="lparser.h" compile="0" resource="0" file="Source/Lua/lparser.h"/>
+      <FILE id="MlBn5F" name="lprefix.h" compile="0" resource="0" file="Source/Lua/lprefix.h"/>
+      <FILE id="iPtuda" name="lstate.c" compile="1" resource="0" file="Source/Lua/lstate.c"/>
+      <FILE id="G9xyPk" name="lstate.h" compile="0" resource="0" file="Source/Lua/lstate.h"/>
+      <FILE id="ZkFS34" name="lstring.c" compile="1" resource="0" file="Source/Lua/lstring.c"/>
+      <FILE id="nc9rmi" name="lstring.h" compile="0" resource="0" file="Source/Lua/lstring.h"/>
+      <FILE id="i87I4D" name="lstrlib.c" compile="1" resource="0" file="Source/Lua/lstrlib.c"/>
+      <FILE id="Regzmg" name="ltable.c" compile="1" resource="0" file="Source/Lua/ltable.c"/>
+      <FILE id="i9i1l0" name="ltable.h" compile="0" resource="0" file="Source/Lua/ltable.h"/>
+      <FILE id="OicFDn" name="ltablib.c" compile="1" resource="0" file="Source/Lua/ltablib.c"/>
+      <FILE id="IQL2Yj" name="ltm.c" compile="1" resource="0" file="Source/Lua/ltm.c"/>
+      <FILE id="YQrNMa" name="ltm.h" compile="0" resource="0" file="Source/Lua/ltm.h"/>
+      <FILE id="lDNsHv" name="luaconf.h" compile="0" resource="0" file="Source/Lua/luaconf.h"/>
+      <FILE id="sllfo0" name="lualib.h" compile="0" resource="0" file="Source/Lua/lualib.h"/>
+      <FILE id="QRrz2V" name="lundump.c" compile="1" resource="0" file="Source/Lua/lundump.c"/>
+      <FILE id="nxKAnf" name="lundump.h" compile="0" resource="0" file="Source/Lua/lundump.h"/>
+      <FILE id="CFpuR0" name="lutf8lib.c" compile="1" resource="0" file="Source/Lua/lutf8lib.c"/>
+      <FILE id="b1wKmT" name="lvm.c" compile="1" resource="0" file="Source/Lua/lvm.c"/>
+      <FILE id="d1PCDN" name="lvm.h" compile="0" resource="0" file="Source/Lua/lvm.h"/>
+      <FILE id="K6VxoE" name="lzio.c" compile="1" resource="0" file="Source/Lua/lzio.c"/>
+      <FILE id="fDSG6Z" name="lzio.h" compile="0" resource="0" file="Source/Lua/lzio.h"/>
+    </GROUP>
+    <GROUP id="{D5F3E85C-C74C-DD52-FD20-16126D69020F}" name="LZMA">
+      <GROUP id="{18353F9A-E402-D787-9B71-F4474DDFB64B}" name="easylzma">
+        <FILE id="hGsmTq" name="common.h" compile="0" resource="0" file="lzma/easylzma/common.h"/>
+        <FILE id="hYNuWm" name="compress.h" compile="0" resource="0" file="lzma/easylzma/compress.h"/>
+        <FILE id="fPcrhL" name="decompress.h" compile="0" resource="0" file="lzma/easylzma/decompress.h"/>
+      </GROUP>
+      <FILE id="EFCual" name="7zBuf.c" compile="1" resource="0" file="lzma/7zBuf.c"/>
+      <FILE id="gHGvrm" name="7zBuf.h" compile="0" resource="0" file="lzma/7zBuf.h"/>
+      <FILE id="ZvVrsj" name="7zBuf2.c" compile="1" resource="0" file="lzma/7zBuf2.c"/>
+      <FILE id="ujJhq1" name="7zCrc.c" compile="1" resource="0" file="lzma/7zCrc.c"/>
+      <FILE id="zqFB1Z" name="7zCrc.h" compile="0" resource="0" file="lzma/7zCrc.h"/>
+      <FILE id="a88xNx" name="7zFile.c" compile="1" resource="0" file="lzma/7zFile.c"/>
+      <FILE id="DCGzGW" name="7zFile.h" compile="0" resource="0" file="lzma/7zFile.h"/>
+      <FILE id="QBmE7g" name="7zStream.c" compile="1" resource="0" file="lzma/7zStream.c"/>
+      <FILE id="cTP7pA" name="7zVersion.h" compile="0" resource="0" file="lzma/7zVersion.h"/>
+      <FILE id="HxaVR9" name="Alloc.c" compile="1" resource="0" file="lzma/Alloc.c"/>
+      <FILE id="dvr15i" name="Alloc.h" compile="0" resource="0" file="lzma/Alloc.h"/>
+      <FILE id="ewQduq" name="Bcj2.c" compile="1" resource="0" file="lzma/Bcj2.c"/>
+      <FILE id="UKmZ5A" name="Bcj2.h" compile="0" resource="0" file="lzma/Bcj2.h"/>
+      <FILE id="zaRovB" name="Bra.c" compile="1" resource="0" file="lzma/Bra.c"/>
+      <FILE id="dUriHZ" name="Bra.h" compile="0" resource="0" file="lzma/Bra.h"/>
+      <FILE id="FU7ant" name="Bra86.c" compile="1" resource="0" file="lzma/Bra86.c"/>
+      <FILE id="hLVdzy" name="BraIA64.c" compile="1" resource="0" file="lzma/BraIA64.c"/>
+      <FILE id="uregot" name="common_internal.c" compile="1" resource="0"
+            file="lzma/common_internal.c"/>
+      <FILE id="eVUT3Z" name="common_internal.h" compile="0" resource="0"
+            file="lzma/common_internal.h"/>
+      <FILE id="DqPf20" name="compress.c" compile="1" resource="0" file="lzma/compress.c"/>
+      <FILE id="RiBOt0" name="CpuArch.h" compile="0" resource="0" file="lzma/CpuArch.h"/>
+      <FILE id="iVr92i" name="decompress.c" compile="1" resource="0" file="lzma/decompress.c"/>
+      <FILE id="QKV6Bm" name="LzFind.c" compile="1" resource="0" file="lzma/LzFind.c"/>
+      <FILE id="xNb179" name="LzFind.h" compile="0" resource="0" file="lzma/LzFind.h"/>
+      <FILE id="JQUCOo" name="LzHash.h" compile="0" resource="0" file="lzma/LzHash.h"/>
+      <FILE id="aCcjzv" name="lzip_header.c" compile="1" resource="0" file="lzma/lzip_header.c"/>
+      <FILE id="SpO7Ir" name="lzip_header.h" compile="0" resource="0" file="lzma/lzip_header.h"/>
+      <FILE id="eGk4QZ" name="lzma_header.c" compile="1" resource="0" file="lzma/lzma_header.c"/>
+      <FILE id="MsrRt6" name="lzma_header.h" compile="0" resource="0" file="lzma/lzma_header.h"/>
+      <FILE id="CAEFip" name="LzmaDec.c" compile="1" resource="0" file="lzma/LzmaDec.c"/>
+      <FILE id="gKsPuL" name="LzmaDec.h" compile="0" resource="0" file="lzma/LzmaDec.h"/>
+      <FILE id="JEvPup" name="LzmaEnc.c" compile="1" resource="0" file="lzma/LzmaEnc.c"/>
+      <FILE id="VQBIg1" name="LzmaEnc.h" compile="0" resource="0" file="lzma/LzmaEnc.h"/>
+      <FILE id="alMx8W" name="LzmaLib.c" compile="1" resource="0" file="lzma/LzmaLib.c"/>
+      <FILE id="nnWTqi" name="LzmaLib.h" compile="0" resource="0" file="lzma/LzmaLib.h"/>
+      <FILE id="Lc2bmt" name="Types.h" compile="0" resource="0" file="lzma/Types.h"/>
+    </GROUP>
+    <GROUP id="{FDC7D40D-3BDD-00BA-E2B1-46DD35CB5E88}" name="EEL2">
+      <GROUP id="{028F0C70-E6C2-B821-086B-D7C1FF5BE85B}" name="NumericSystem">
+        <GROUP id="{3D2C8887-4381-6B9A-7727-BE9C25B0BCAB}" name="libsamplerate">
+          <FILE id="iFl0Ex" name="common.h" compile="0" resource="0" file="../numericSys/libsamplerate/common.h"/>
+          <FILE id="ybuqE9" name="samplerate.c" compile="1" resource="0" file="../numericSys/libsamplerate/samplerate.c"/>
+          <FILE id="QbPZwI" name="samplerate.h" compile="0" resource="0" file="../numericSys/libsamplerate/samplerate.h"/>
+          <FILE id="yJlOpl" name="src_config.h" compile="0" resource="0" file="../numericSys/libsamplerate/src_config.h"/>
+          <FILE id="EeWVdw" name="src_sinc.c" compile="1" resource="0" file="../numericSys/libsamplerate/src_sinc.c"/>
+        </GROUP>
+        <GROUP id="{D3FF6315-CD6F-30C1-F465-9D92E986EB3C}" name="FilterDesign">
+          <FILE id="i6W672" name="cos_fib_paraunitary.c" compile="1" resource="0"
+                file="../numericSys/FilterDesign/cos_fib_paraunitary.c"/>
+          <FILE id="OLjpSL" name="eqnerror.c" compile="1" resource="0" file="../numericSys/FilterDesign/eqnerror.c"/>
+          <FILE id="zzlj3m" name="fdesign.h" compile="0" resource="0" file="../numericSys/FilterDesign/fdesign.h"/>
+          <FILE id="A8u2vt" name="firls.c" compile="1" resource="0" file="../numericSys/FilterDesign/firls.c"/>
+          <FILE id="pAHNLC" name="generalFdesign.c" compile="1" resource="0"
+                file="../numericSys/FilterDesign/generalFdesign.c"/>
+        </GROUP>
+        <GROUP id="{A525E6C6-B7CA-1DE6-476E-14C5DC771E98}" name="SolveLinearSystem">
+          <FILE id="ScpE8H" name="inv.c" compile="1" resource="0" file="../numericSys/SolveLinearSystem/inv.c"/>
+          <FILE id="Um5eh3" name="mldivide.c" compile="1" resource="0" file="../numericSys/SolveLinearSystem/mldivide.c"/>
+          <FILE id="ZUHPiN" name="mrdivide.c" compile="1" resource="0" file="../numericSys/SolveLinearSystem/mrdivide.c"/>
+          <FILE id="L09jxB" name="pinv.c" compile="1" resource="0" file="../numericSys/SolveLinearSystem/pinv.c"/>
+          <FILE id="JpTWFn" name="qr_fact.c" compile="1" resource="0" file="../numericSys/SolveLinearSystem/qr_fact.c"/>
+          <FILE id="hQvAQu" name="qr_fact.h" compile="0" resource="0" file="../numericSys/SolveLinearSystem/qr_fact.h"/>
+        </GROUP>
+        <FILE id="upatst" name="codelet.c" compile="1" resource="0" file="../numericSys/codelet.c"/>
+        <FILE id="u7pQ9m" name="codelet.h" compile="0" resource="0" file="../numericSys/codelet.h"/>
+        <FILE id="C6DbeE" name="cpoly.h" compile="0" resource="0" file="../numericSys/cpoly.h"/>
+        <FILE id="Yehisu" name="cpoly.c" compile="1" resource="0" file="../numericSys/cpoly.c"/>
+        <FILE id="YFyCU1" name="FFTConvolver.c" compile="1" resource="0" file="../numericSys/FFTConvolver.c"/>
+        <FILE id="GIqG23" name="FFTConvolver.h" compile="0" resource="0" file="../numericSys/FFTConvolver.h"/>
+        <FILE id="wNErRg" name="MersenneTwister.c" compile="1" resource="0"
+              file="../numericSys/MersenneTwister.c"/>
+        <FILE id="Hboa2x" name="quadprog.c" compile="1" resource="0" file="../numericSys/quadprog.c"/>
+        <FILE id="cAO6rn" name="quadprog.h" compile="0" resource="0" file="../numericSys/quadprog.h"/>
+        <FILE id="QjuXhN" name="solvopt.c" compile="1" resource="0" file="../numericSys/solvopt.c"/>
+        <FILE id="ScdR7V" name="solvopt.h" compile="0" resource="0" file="../numericSys/solvopt.h"/>
+      </GROUP>
+      <FILE id="Tq5C9s" name="dr_flac.h" compile="0" resource="0" file="../dr_flac.h"/>
+      <FILE id="eNGaBE" name="dr_wav.h" compile="0" resource="0" file="../dr_wav.h"/>
+      <FILE id="E2M3AK" name="eelCommon.h" compile="0" resource="0" file="../eelCommon.h"/>
+      <FILE id="l7helm" name="fft.c" compile="1" resource="0" file="../fft.c"/>
+      <FILE id="RDmfh9" name="fft.h" compile="0" resource="0" file="../fft.h"/>
+      <FILE id="jCPbYI" name="glue_port.h" compile="0" resource="0" file="../glue_port.h"/>
+      <FILE id="BLzxCV" name="ns-eel-int.h" compile="0" resource="0" file="../ns-eel-int.h"/>
+      <FILE id="z8BDRS" name="ns-eel.h" compile="0" resource="0" file="../ns-eel.h"/>
+      <FILE id="ijQgJS" name="nseel-compiler.c" compile="1" resource="0"
+            file="../nseel-compiler.c"/>
+      <FILE id="o8aNpK" name="nseel-ram.c" compile="1" resource="0" file="../nseel-ram.c"/>
+      <FILE id="BSIHMl" name="y.tab.c" compile="1" resource="0" file="../y.tab.c"/>
+    </GROUP>
+    <GROUP id="{A23E20EB-1A84-F05D-151B-96049B997EB2}" name="Utility">
+      <FILE id="OdPo2A" name="cpthread.c" compile="1" resource="0" file="../cpthread.c"/>
+      <FILE id="baYt2W" name="cpthread.h" compile="0" resource="0" file="../cpthread.h"/>
+      <FILE id="Xg8vEh" name="s_str.c" compile="1" resource="0" file="../s_str.c"/>
+      <FILE id="EPkJDo" name="s_str.h" compile="0" resource="0" file="../s_str.h"/>
+    </GROUP>
+    <GROUP id="{1B48AB26-9AD5-7E67-483D-383E0FDEC597}" name="Source">
+      <FILE id="wGksP2" name="simple.c" compile="1" resource="0" file="Source/simple.c"/>
+      <FILE id="LwIs0g" name="simple.h" compile="0" resource="0" file="Source/simple.h"/>
+      <FILE id="opXFR2" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="OTj9AV" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="t7FzKV" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="XKvuTP" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release" optimisation="6" fastMath="1"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../../JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <VS2017 targetFolder="Builds/VisualStudio2017">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="0" name="Release" fastMath="1" optimisation="3" winArchitecture="Win32"
+                       useRuntimeLibDLL="0"/>
+        <CONFIGURATION isDebug="1" name="Debug" fastMath="1" winArchitecture="Win32"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../../../JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2017>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <LIVE_SETTINGS>
+    <OSX/>
+    <WINDOWS/>
+  </LIVE_SETTINGS>
+  <JUCEOPTIONS/>
+</JUCERPROJECT>

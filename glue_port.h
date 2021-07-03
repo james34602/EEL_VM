@@ -1,7 +1,7 @@
 #ifndef _EEL_GLUE_PORTABLE_H_
 #define _EEL_GLUE_PORTABLE_H_
 #define DECL_ASMFUNC(x) 
-#define GLUE_JMP_TYPE int
+#define GLUE_JMP_TYPE int32_t
 #define GLUE_JMP_SET_OFFSET(endOfInstruction,offset) (((GLUE_JMP_TYPE *)(endOfInstruction))[-1] = (offset))
 #define GLUE_HAS_FXCH 
 #define GLUE_MAX_FPSTACK_SIZE 64
@@ -109,14 +109,6 @@ enum {
   EEL_BC_GENERIC1PARM_RETD,
   EEL_BC_GENERIC2PARM_RETD,
   EEL_BC_GENERIC3PARM_RETD,
-  EEL_BC_USERSTACK_PUSH,
-  EEL_BC_USERSTACK_POP,
-  EEL_BC_USERSTACK_POPFAST,
-  EEL_BC_USERSTACK_PEEK,
-  EEL_BC_USERSTACK_PEEK_INT,
-  EEL_BC_USERSTACK_PEEK_TOP,
-  EEL_BC_USERSTACK_EXCH,
-  EEL_BC_DBG_GETSTACKPTR,
 };
 #define BC_DECL(x) static const EEL_BC_TYPE GLUE_##x[] = { EEL_BC_##x };
 #define BC_DECL_JMP(x) static const EEL_BC_TYPE GLUE_##x[1 + sizeof(GLUE_JMP_TYPE) / sizeof(EEL_BC_TYPE)] = { EEL_BC_##x };
@@ -146,7 +138,7 @@ BC_DECL(WHILE_BEGIN);
 BC_DECL_JMP(WHILE_CHECK_RV)  
 #define GLUE_MOV_PX_DIRECTVALUE_SIZE (sizeof(EEL_BC_TYPE) + sizeof(INT_PTR))
 #define GLUE_MOV_PX_DIRECTVALUE_TOSTACK_SIZE GLUE_MOV_PX_DIRECTVALUE_SIZE 
-static void GLUE_MOV_PX_DIRECTVALUE_GEN(void *b, INT_PTR v, int wv) 
+static void GLUE_MOV_PX_DIRECTVALUE_GEN(void *b, INT_PTR v, int32_t wv) 
 {   
   static const EEL_BC_TYPE tab[] = {
     EEL_BC_MOV_FPTOP_DV,
@@ -157,7 +149,7 @@ static void GLUE_MOV_PX_DIRECTVALUE_GEN(void *b, INT_PTR v, int wv)
   *(EEL_BC_TYPE *)b = tab[wv+1];
   *(INT_PTR *) ((char *)b + sizeof(EEL_BC_TYPE)) = v;
 }
-static int GLUE_RESET_WTP(unsigned char *out, void *ptr)
+static int32_t GLUE_RESET_WTP(unsigned char *out, void *ptr)
 {
   BC_DECL(_RESET_WTP)
   if (out) memcpy(out,&GLUE__RESET_WTP,sizeof(GLUE__RESET_WTP));
@@ -165,7 +157,7 @@ static int GLUE_RESET_WTP(unsigned char *out, void *ptr)
   return sizeof(GLUE__RESET_WTP) + sizeof(void *);
 }
 #define GLUE_POP_PX_SIZE sizeof(EEL_BC_TYPE)
-static void GLUE_POP_PX(void *b, int wv)
+static void GLUE_POP_PX(void *b, int32_t wv)
 {
   static const EEL_BC_TYPE tab[3] ={
     EEL_BC_POP_P1,
@@ -175,29 +167,29 @@ static void GLUE_POP_PX(void *b, int wv)
   *(EEL_BC_TYPE *)b = tab[wv];
 }
 #define GLUE_SET_PX_FROM_P1_SIZE sizeof(EEL_BC_TYPE)
-static void GLUE_SET_PX_FROM_P1(void *b, int wv)
+static void GLUE_SET_PX_FROM_P1(void *b, int32_t wv)
 {
-  static const unsigned int tab[3]={
+  static const uint32_t tab[3]={
     EEL_BC_NOP,
     EEL_BC_SET_P2_FROM_P1,
     EEL_BC_SET_P3_FROM_P1,
   };
   *(EEL_BC_TYPE *)b = tab[wv];
 }
-#define GLUE_MOVE_STACK_SIZE (sizeof(EEL_BC_TYPE) + sizeof(int))
-static void GLUE_MOVE_STACK(void *b, int amt)
+#define GLUE_MOVE_STACK_SIZE (sizeof(EEL_BC_TYPE) + sizeof(int32_t))
+static void GLUE_MOVE_STACK(void *b, int32_t amt)
 {
   *(EEL_BC_TYPE *)b = EEL_BC_MOVE_STACK;
-  *(int *)(((EEL_BC_TYPE *)b)+1) = amt;
+  *(int32_t *)(((EEL_BC_TYPE *)b)+1) = amt;
 }
-#define GLUE_STORE_P1_TO_STACK_AT_OFFS_SIZE (sizeof(EEL_BC_TYPE) + sizeof(int))
-static void GLUE_STORE_P1_TO_STACK_AT_OFFS(void *b, int offs)
+#define GLUE_STORE_P1_TO_STACK_AT_OFFS_SIZE (sizeof(EEL_BC_TYPE) + sizeof(int32_t))
+static void GLUE_STORE_P1_TO_STACK_AT_OFFS(void *b, int32_t offs)
 {
   *(EEL_BC_TYPE *)b = EEL_BC_STORE_P1_TO_STACK_AT_OFFS;
-  *(int *)(((EEL_BC_TYPE *)b)+1) = offs;
+  *(int32_t *)(((EEL_BC_TYPE *)b)+1) = offs;
 }
 #define GLUE_MOVE_PX_STACKPTR_SIZE sizeof(EEL_BC_TYPE)
-static void GLUE_MOVE_PX_STACKPTR_GEN(void *b, int wv)
+static void GLUE_MOVE_PX_STACKPTR_GEN(void *b, int32_t wv)
 {
   static const EEL_BC_TYPE tab[3] = {
     EEL_BC_MOVE_STACKPTR_TO_P1,
@@ -206,7 +198,7 @@ static void GLUE_MOVE_PX_STACKPTR_GEN(void *b, int wv)
   };    
   *(EEL_BC_TYPE *)b = tab[wv];
 }
-static int GLUE_POP_VALUE_TO_ADDR(unsigned char *buf, void *destptr)
+static int32_t GLUE_POP_VALUE_TO_ADDR(unsigned char *buf, void *destptr)
 {    
   if (buf)
   {
@@ -215,7 +207,7 @@ static int GLUE_POP_VALUE_TO_ADDR(unsigned char *buf, void *destptr)
   }
   return sizeof(EEL_BC_TYPE) + sizeof(void *);
 }
-static int GLUE_COPY_VALUE_AT_P1_TO_PTR(unsigned char *buf, void *destptr)
+static int32_t GLUE_COPY_VALUE_AT_P1_TO_PTR(unsigned char *buf, void *destptr)
 {    
   if (buf)
   {
@@ -226,7 +218,7 @@ static int GLUE_COPY_VALUE_AT_P1_TO_PTR(unsigned char *buf, void *destptr)
 }
 static unsigned char *EEL_GLUE_set_immediate(void *_p, INT_PTR newv)
 {
-  int mv=5;
+  int32_t mv=5;
   char *p=(char*)_p;
   p+=sizeof(EEL_BC_TYPE);
   while (*(INT_PTR*)p && mv-- > 0) p++;
@@ -235,7 +227,7 @@ static unsigned char *EEL_GLUE_set_immediate(void *_p, INT_PTR newv)
   return (unsigned char *) p + sizeof(INT_PTR) - sizeof(EEL_BC_TYPE);
 }
 #define GLUE_SET_PX_FROM_WTP_SIZE sizeof(EEL_BC_TYPE)
-static void GLUE_SET_PX_FROM_WTP(void *b, int wv)
+static void GLUE_SET_PX_FROM_WTP(void *b, int32_t wv)
 {
   static const EEL_BC_TYPE tab[3]={
     EEL_BC_SET_P1_FROM_WTP,
@@ -244,7 +236,7 @@ static void GLUE_SET_PX_FROM_WTP(void *b, int wv)
   };
   *(EEL_BC_TYPE *)b = tab[wv];
 }
-static int GLUE_POP_FPSTACK_TO_PTR(unsigned char *buf, void *destptr)
+static int32_t GLUE_POP_FPSTACK_TO_PTR(unsigned char *buf, void *destptr)
 {
   if (buf)
   {
@@ -254,7 +246,7 @@ static int GLUE_POP_FPSTACK_TO_PTR(unsigned char *buf, void *destptr)
   return sizeof(EEL_BC_TYPE) + sizeof(void *);
 }
   #define GLUE_PUSH_VAL_AT_PX_TO_FPSTACK_SIZE sizeof(EEL_BC_TYPE)
-  static void GLUE_PUSH_VAL_AT_PX_TO_FPSTACK(void *b, int wv)
+  static void GLUE_PUSH_VAL_AT_PX_TO_FPSTACK(void *b, int32_t wv)
   {
     static const EEL_BC_TYPE tab[3] = {
       EEL_BC_PUSH_VAL_AT_P1_TO_FPSTACK, 
@@ -264,7 +256,7 @@ static int GLUE_POP_FPSTACK_TO_PTR(unsigned char *buf, void *destptr)
     *(EEL_BC_TYPE *)b = tab[wv];
   }
 #define GLUE_POP_FPSTACK_TO_WTP_TO_PX_SIZE (sizeof(GLUE_POP_FPSTACK_TO_WTP) + GLUE_SET_PX_FROM_WTP_SIZE)
-static void GLUE_POP_FPSTACK_TO_WTP_TO_PX(unsigned char *buf, int wv)
+static void GLUE_POP_FPSTACK_TO_WTP_TO_PX(unsigned char *buf, int32_t wv)
 {
   GLUE_SET_PX_FROM_WTP(buf,wv);
   memcpy(buf + GLUE_SET_PX_FROM_WTP_SIZE,GLUE_POP_FPSTACK_TO_WTP,sizeof(GLUE_POP_FPSTACK_TO_WTP));
@@ -319,20 +311,12 @@ BC_DECLASM(max_fp,MAX_FP)
 BC_DECLASM(abs,ABS)
 BC_DECLASM(sign,SIGN)
 BC_DECLASM(invsqrt,INVSQRT)
-BC_DECLASM(dbg_getstackptr,DBG_GETSTACKPTR)
 BC_DECLASM(booltofp,BOOLTOFP)
 BC_DECLASM(fptobool,FPTOBOOL)
 BC_DECLASM(fptobool_rev,FPTOBOOL_REV)
 #define BC_DECLASM_N(x,y,n) static EEL_BC_TYPE nseel_asm_##x[1 + (n*sizeof(INT_PTR))/sizeof(EEL_BC_TYPE)]={EEL_BC_##y, };
 #define BC_DECLASM_N2(x,y,n) static EEL_BC_TYPE _asm_##x[1 + (n*sizeof(INT_PTR))/sizeof(EEL_BC_TYPE)]={EEL_BC_##y, };
 #define BC_DECLASM_N_EXPORT(x,y,n) EEL_BC_TYPE _asm_##x[1 + (n*sizeof(INT_PTR))/sizeof(EEL_BC_TYPE)]={EEL_BC_##y, }; const void *const _asm_##x##_end = EEL_BC_ENDOF(_asm_##x);
-BC_DECLASM_N(stack_push,USERSTACK_PUSH,3)
-BC_DECLASM_N(stack_pop,USERSTACK_POP,3)
-BC_DECLASM_N(stack_pop_fast,USERSTACK_POPFAST,3)
-BC_DECLASM_N(stack_peek,USERSTACK_PEEK,3)
-BC_DECLASM_N(stack_peek_int,USERSTACK_PEEK_INT,4)
-BC_DECLASM_N(stack_peek_top,USERSTACK_PEEK_TOP,1)
-BC_DECLASM_N(stack_exch,USERSTACK_EXCH,1)
 BC_DECLASM_N(fcall,FCALL,1)
 BC_DECLASM_N(1pdd,CFUNC_1PDD,1)
 BC_DECLASM_N(2pdd,CFUNC_2PDD,1)
@@ -412,30 +396,30 @@ BC_DECLASM_N_EXPORT(generic3parm_retd,GENERIC3PARM_RETD,2)
 #define nseel_asm_stack_peek_int_end EEL_BC_ENDOF(nseel_asm_stack_peek_int)
 #define nseel_asm_stack_peek_top_end EEL_BC_ENDOF(nseel_asm_stack_peek_top)
 #define nseel_asm_stack_exch_end EEL_BC_ENDOF(nseel_asm_stack_exch)
-static void *GLUE_realAddress(void *fn, void *fn_e, int *size)
+static void *GLUE_realAddress(void *fn, void *fn_e, int32_t *size)
 {
   *size = (char *)fn_e - (char *)fn;
   return fn;
 }
-#define EEL_BC_STACKSIZE (65536)
+#define EEL_BC_STACKSIZE (32768)
 // todo: check for stack overflows! we could determine if this is possible at compile time.
 #define EEL_BC_STACK_POP_SIZE 8
 #define EEL_BC_STACK_PUSH(type, val) (*(type *)(stackptr -= EEL_BC_STACK_POP_SIZE)) = (val)
 #define EEL_BC_STACK_POP() (stackptr += EEL_BC_STACK_POP_SIZE)
-#define EEL_BC_TRUE ((EEL_F*)(INT_PTR)1)
+#define EEL_BC_TRUE ((float*)(INT_PTR)1)
 static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt) 
 {
   char __stack[EEL_BC_STACKSIZE];
   char *iptr = (char*)cp;
   char *stackptr=__stack + EEL_BC_STACKSIZE;
-  EEL_F *p1 = NULL, *p2 = NULL, *p3 = NULL, *wtp = (EEL_F*)bp;
+  float *p1 = NULL, *p2 = NULL, *p3 = NULL, *wtp = (float*)bp;
 #define fp_top (_fpstacktop[0])
 #define fp_top2 (_fpstacktop[-1])
 #define fp_push(x) *++_fpstacktop=(x)
 #define fp_pop() (*_fpstacktop--)
 #define fp_rewind(x) (_fpstacktop -= (x))
-  EEL_F fpstack[GLUE_MAX_FPSTACK_SIZE];
-  EEL_F *_fpstacktop=fpstack-1;
+  float fpstack[GLUE_MAX_FPSTACK_SIZE];
+  float *_fpstacktop=fpstack-1;
   for (;;)
   {
     EEL_BC_TYPE inst = *(EEL_BC_TYPE *)iptr;
@@ -444,7 +428,7 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
     {
       case EEL_BC_FXCH:
         {
-          EEL_F a = fp_top;
+          float a = fp_top;
           fp_top=fp_top2;
           fp_top2=a;
         }
@@ -468,7 +452,7 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
         iptr += p1 ? sizeof(GLUE_JMP_TYPE)+*(GLUE_JMP_TYPE *)iptr : sizeof(GLUE_JMP_TYPE);
       break;
       case EEL_BC_MOV_FPTOP_DV:
-        fp_push(**(EEL_F **)iptr);
+        fp_push(**(float **)iptr);
         iptr += sizeof(void*);
       break;
       case EEL_BC_MOV_P1_DV:
@@ -491,41 +475,41 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
         EEL_BC_STACK_PUSH(void *, p1);
       break;
       case EEL_BC_PUSH_P1PTR_AS_VALUE:
-        EEL_BC_STACK_PUSH(EEL_F, *p1);
+        EEL_BC_STACK_PUSH(float, *p1);
       break;
       case EEL_BC_POP_P1:
-        p1 = *(EEL_F **) stackptr;
+        p1 = *(float **) stackptr;
         EEL_BC_STACK_POP();
       break;
       case EEL_BC_POP_P2:
-        p2 = *(EEL_F **) stackptr;
+        p2 = *(float **) stackptr;
         EEL_BC_STACK_POP();
       break;
       case EEL_BC_POP_P3:
-        p3 = *(EEL_F **) stackptr;
+        p3 = *(float **) stackptr;
         EEL_BC_STACK_POP();
       break;
       case EEL_BC_POP_VALUE_TO_ADDR:
-        **(EEL_F**)iptr = *(EEL_F *)stackptr;
+        **(float**)iptr = *(float *)stackptr;
         EEL_BC_STACK_POP();
         iptr += sizeof(void*);
       break;
       case EEL_BC_MOVE_STACK:
-        stackptr += *(int *)iptr;
-        iptr += sizeof(int);
+        stackptr += *(int32_t *)iptr;
+        iptr += sizeof(int32_t);
       break;
       case EEL_BC_STORE_P1_TO_STACK_AT_OFFS:
-        *(void **) (stackptr + *(int *)iptr) = p1;
-        iptr += sizeof(int);
+        *(void **) (stackptr + *(int32_t *)iptr) = p1;
+        iptr += sizeof(int32_t);
       break;
       case EEL_BC_MOVE_STACKPTR_TO_P1:
-        p1 = (double *)stackptr;
+        p1 = (float *)stackptr;
       break;
       case EEL_BC_MOVE_STACKPTR_TO_P2:
-        p2 = (double *)stackptr;
+        p2 = (float *)stackptr;
       break;
       case EEL_BC_MOVE_STACKPTR_TO_P3:
-        p3 = (double *)stackptr;
+        p3 = (float *)stackptr;
       break;
       case EEL_BC_SET_P2_FROM_P1:
         p2=p1;
@@ -534,7 +518,7 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
         p3=p1;
       break;
       case EEL_BC_COPY_VALUE_AT_P1_TO_ADDR:
-        **(EEL_F **)iptr = *p1;
+        **(float **)iptr = *p1;
         iptr += sizeof(void*);
       break;
       case EEL_BC_SET_P1_FROM_WTP:
@@ -547,11 +531,11 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
         p3 = wtp;
       break;
       case EEL_BC_POP_FPSTACK_TO_PTR:
-        **((EEL_F **)iptr) = fp_pop();
+        **((float **)iptr) = fp_pop();
         iptr += sizeof(void *);
       break;
       case EEL_BC_POP_FPSTACK_TOSTACK:
-        EEL_BC_STACK_PUSH(EEL_F, fp_pop());
+        EEL_BC_STACK_PUSH(float, fp_pop());
       break;
       case EEL_BC_PUSH_VAL_AT_P1_TO_FPSTACK: 
         fp_push(*p1);
@@ -572,7 +556,7 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
         p1 = EEL_BC_TRUE;
       break;
       case EEL_BC_LOOP_LOADCNT:
-        if ((EEL_BC_STACK_PUSH(int, (int)fp_pop())) < 1)
+        if ((EEL_BC_STACK_PUSH(int32_t, (int32_t)fp_pop())) < 1)
         {
           EEL_BC_STACK_POP();
           iptr+= sizeof(GLUE_JMP_TYPE)+*(GLUE_JMP_TYPE *)iptr;
@@ -585,7 +569,7 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
       break;
       case EEL_BC_LOOP_END:
         wtp = *(void **) (stackptr);
-        if (--(*(int *)(stackptr+EEL_BC_STACK_POP_SIZE)) <= 0)
+        if (--(*(int32_t *)(stackptr+EEL_BC_STACK_POP_SIZE)) <= 0)
         {
           stackptr += EEL_BC_STACK_POP_SIZE*2;
           iptr += sizeof(GLUE_JMP_TYPE);
@@ -596,15 +580,15 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
         }
       break;
       case EEL_BC_WHILE_SETUP:
-        EEL_BC_STACK_PUSH(int, NSEEL_LOOPFUNC_SUPPORT_MAXLEN);
+        EEL_BC_STACK_PUSH(int32_t, NSEEL_NATIVE_FLT_MAX_INT);
       break;
       case EEL_BC_WHILE_BEGIN:
         EEL_BC_STACK_PUSH(void *, wtp);
       break;
       case EEL_BC_WHILE_END:
-        wtp = *(EEL_F **) stackptr;
+        wtp = *(float **) stackptr;
         EEL_BC_STACK_POP();
-		if (--(*(int *)stackptr) <= 0)
+		if (--(*(int32_t *)stackptr) <= 0)
 		{
 			EEL_BC_STACK_POP();
 			iptr += sizeof(GLUE_JMP_TYPE) + *(GLUE_JMP_TYPE *)iptr; // endpt
@@ -629,7 +613,7 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
         p1 = p1 ? EEL_BC_TRUE : NULL;
       break;
       case EEL_BC_EQUAL:
-        p1 = fabs(fp_top - fp_top2) < NSEEL_CLOSEFACTOR ? EEL_BC_TRUE : NULL;
+        p1 = fabsf(fp_top - fp_top2) < NSEEL_CLOSEFACTOR ? EEL_BC_TRUE : NULL;
         fp_rewind(2);
       break;
       case EEL_BC_EQUAL_EXACT:
@@ -637,7 +621,7 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
         fp_rewind(2);
       break;
       case EEL_BC_NOTEQUAL:
-        p1 = fabs(fp_top - fp_top2) >= NSEEL_CLOSEFACTOR ? EEL_BC_TRUE : NULL;
+        p1 = fabsf(fp_top - fp_top2) >= NSEEL_CLOSEFACTOR ? EEL_BC_TRUE : NULL;
         fp_rewind(2);
       break;
       case EEL_BC_NOTEQUAL_EXACT:
@@ -669,18 +653,18 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
         fp_rewind(1);
       break;
       case EEL_BC_AND:
-        fp_top2 = (EEL_F) (((int)fp_top) & (int)(fp_top2));
+        fp_top2 = (float) (((int32_t)fp_top) & (int32_t)(fp_top2));
         fp_rewind(1);
       break;
       case EEL_BC_OR:
-        fp_top2 = (EEL_F) (((int)fp_top) | (int)(fp_top2));
+        fp_top2 = (float) (((int32_t)fp_top) | (int32_t)(fp_top2));
         fp_rewind(1);
       break;
       case EEL_BC_OR0:
-        fp_top = (EEL_F) ((int)(fp_top));
+        fp_top = (float) ((int32_t)(fp_top));
       break;
       case EEL_BC_XOR:
-        fp_top2 = (EEL_F) (((int)fp_top) ^ (int)(fp_top2));
+        fp_top2 = (float) (((int32_t)fp_top) ^ (int32_t)(fp_top2));
         fp_rewind(1);
       break;
       case EEL_BC_ADD_OP:
@@ -709,15 +693,15 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
       break;
       case EEL_BC_AND_OP:
         p1 = p2;
-        *p2 = (EEL_F) (((int)*p2) & (int)fp_pop());
+        *p2 = (float) (((int32_t)*p2) & (int32_t)fp_pop());
       break;
       case EEL_BC_OR_OP:
         p1 = p2;
-        *p2 = (EEL_F) (((int)*p2) | (int)fp_pop());
+        *p2 = (float) (((int32_t)*p2) | (int32_t)fp_pop());
       break;
       case EEL_BC_XOR_OP:
         p1 = p2;
-        *p2 = (EEL_F) (((int)*p2) ^ (int)fp_pop());
+        *p2 = (float) (((int32_t)*p2) ^ (int32_t)fp_pop());
       break;
       case EEL_BC_UMINUS:
         fp_top = -fp_top;
@@ -740,23 +724,23 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
       break;
       case EEL_BC_MOD:
         {
-          int a = (int) (fp_pop());
-          fp_top = a ? (EEL_F) ((int)fp_top % a) : 0.0;
+          int32_t a = (int32_t) (fp_pop());
+          fp_top = a ? (float) ((int32_t)fp_top % a) : 0.0f;
         }
       break;
       case EEL_BC_MOD_OP:
         {
-          int a = (int) (fp_pop());
-          *p2 = a ? (EEL_F) ((int)*p2 % a) : 0.0;
+          int32_t a = (int32_t) (fp_pop());
+          *p2 = a ? (float) ((int32_t)*p2 % a) : 0.0f;
           p1=p2;
         }
       break;
       case EEL_BC_SHR:
-        fp_top2 = (EEL_F) (((int)fp_top2) >> (int)fp_top);
+        fp_top2 = (float) (((int32_t)fp_top2) >> (int32_t)fp_top);
         fp_rewind(1);
       break;
       case EEL_BC_SHL:
-        fp_top2 = (EEL_F) (((int)fp_top2) << (int)fp_top);
+        fp_top2 = (float) (((int32_t)fp_top2) << (int32_t)fp_top);
         fp_rewind(1);
       break;
       case EEL_BC_SQR:
@@ -770,32 +754,29 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
       break;
       case EEL_BC_MIN_FP:
         {
-          EEL_F a=fp_pop();
+          float a=fp_pop();
           if (a<fp_top) fp_top=a;
         }
       break;
       case EEL_BC_MAX_FP:
         {
-          EEL_F a=fp_pop();
+          float a=fp_pop();
           if (a>fp_top) fp_top=a;
         }
       break;
       case EEL_BC_ABS:
-        fp_top = fabs(fp_top);
+        fp_top = fabsf(fp_top);
       break;
       case EEL_BC_SIGN:
-        if (fp_top<0.0) fp_top=-1.0;
-        else if (fp_top>0.0) fp_top=1.0;
-      break;
-      case EEL_BC_DBG_GETSTACKPTR:
-        fp_top = (int)(stackptr - __stack);
+        if (fp_top<0.0f) fp_top=-1.0f;
+        else if (fp_top>0.0f) fp_top=1.0f;
       break;
       case EEL_BC_INVSQRT:
         {
           float y = (float)fp_top;
-          int i  = 0x5f3759df - ( (* (int *) &y) >> 1 );
+          int32_t i  = 0x5f3759df - ( (* (int32_t *) &y) >> 1 );
           y  = *(float *) &i;
-          fp_top  = y * ( 1.5F - ( (fp_top * 0.5) * y * y ) );
+          fp_top  = y * ( 1.5f - ( (fp_top * 0.5f) * y * y ) );
         }
       break;
       case EEL_BC_FCALL:
@@ -806,24 +787,24 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
         }
       break;
       case EEL_BC_BOOLTOFP:
-        fp_push(p1 ? 1.0 : 0.0);
+        fp_push(p1 ? 1.0f : 0.0f);
       break;
       case EEL_BC_FPTOBOOL:
-        p1 = fabs(fp_pop()) >= NSEEL_CLOSEFACTOR ? EEL_BC_TRUE : NULL;
+        p1 = fabsf(fp_pop()) >= NSEEL_CLOSEFACTOR ? EEL_BC_TRUE : NULL;
       break;
       case EEL_BC_FPTOBOOL_REV:
-        p1 = fabs(fp_pop()) < NSEEL_CLOSEFACTOR ? EEL_BC_TRUE : NULL;
+        p1 = fabsf(fp_pop()) < NSEEL_CLOSEFACTOR ? EEL_BC_TRUE : NULL;
       break;
       case EEL_BC_CFUNC_1PDD:
         {
-          double (*f)(double) = *(double (**)(double)) iptr;
+          float (*f)(float) = *(float (**)(float)) iptr;
           fp_top = f(fp_top);
           iptr += sizeof(void *);
         }
       break;
       case EEL_BC_CFUNC_2PDD:
         {
-          double (*f)(double,double) = *(double (**)(double,double))iptr;
+          float (*f)(float,float) = *(float (**)(float,float))iptr;
           fp_top2 = f(fp_top2,fp_top);
           fp_rewind(1);
           iptr += sizeof(void *);
@@ -831,7 +812,7 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
       break;
       case EEL_BC_CFUNC_2PDDS:
         {
-          double (*f)(double,double) = *(double (**)(double,double))iptr;
+          float (*f)(float,float) = *(float (**)(float,float))iptr;
           *p2 = f(*p2,fp_pop());
           p1 = p2;
           iptr += sizeof(void *);
@@ -839,117 +820,50 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp, INT_PTR rt)
       break;
       case EEL_BC_MEGABUF:
         {
-          unsigned int idx=(unsigned int) (fp_pop() + NSEEL_CLOSEFACTOR);
-          EEL_F **f = (EEL_F **)rt,*f2;
-          p1 = (idx < NSEEL_RAM_BLOCKS*NSEEL_RAM_ITEMSPERBLOCK && (f2=f[idx/NSEEL_RAM_ITEMSPERBLOCK])) ? 
-              (f2 + (idx&(NSEEL_RAM_ITEMSPERBLOCK-1))) : 
-             __NSEEL_RAMAlloc((void*)rt,idx);
+		  p1 = ((float*)rt) + (uint32_t)(fp_pop() + NSEEL_CLOSEFACTOR);
         }
       break;
       case EEL_BC_GENERIC1PARM:
         {
-          EEL_F *(*f)(void *,EEL_F*) = *(EEL_F *(**)(void *, EEL_F *)) (iptr+sizeof(void *));
+          float *(*f)(void *,float*) = *(float *(**)(void *, float *)) (iptr+sizeof(void *));
           p1 = f(*(void **)iptr,p1);
           iptr += sizeof(void *)*2;
         }
       break;
       case EEL_BC_GENERIC2PARM:
         {
-          EEL_F *(*f)(void *,EEL_F*,EEL_F*) = *(EEL_F *(**)(void *, EEL_F *, EEL_F *)) (iptr+sizeof(void *));
+          float *(*f)(void *,float*,float*) = *(float *(**)(void *, float *, float *)) (iptr+sizeof(void *));
           p1 = f(*(void **)iptr,p2, p1);
           iptr += sizeof(void *)*2;
         }
       break;
       case EEL_BC_GENERIC3PARM:
         {
-          EEL_F *(*f)(void *,EEL_F*,EEL_F*,EEL_F*) = *(EEL_F *(**)(void *, EEL_F *, EEL_F *, EEL_F *)) (iptr+sizeof(void *));
+          float *(*f)(void *,float*,float*,float*) = *(float *(**)(void *, float *, float *, float *)) (iptr+sizeof(void *));
           p1 = f(*(void **)iptr,p3, p2, p1);
           iptr += sizeof(void *)*2;
         }
       break;
       case EEL_BC_GENERIC1PARM_RETD:
         {
-          EEL_F (*f)(void *,EEL_F*) = *(EEL_F (**)(void *, EEL_F *)) (iptr+sizeof(void *));
+          float (*f)(void *,float*) = *(float (**)(void *, float *)) (iptr+sizeof(void *));
           fp_push(f(*(void **)iptr,p1));
           iptr += sizeof(void *)*2;
         }
       break;
       case EEL_BC_GENERIC2PARM_RETD:
         {
-          EEL_F (*f)(void *,EEL_F*,EEL_F*) = *(EEL_F (**)(void *, EEL_F *, EEL_F *)) (iptr+sizeof(void *));
+          float (*f)(void *,float*,float*) = *(float (**)(void *, float *, float *)) (iptr+sizeof(void *));
           fp_push(f(*(void **)iptr,p2, p1));
           iptr += sizeof(void *)*2;
         }
       break;
       case EEL_BC_GENERIC3PARM_RETD:
         {
-          EEL_F (*f)(void *,EEL_F*,EEL_F*,EEL_F*) = *(EEL_F (**)(void *, EEL_F *, EEL_F *, EEL_F *)) (iptr+sizeof(void *));
+          float (*f)(void *,float*,float*,float*) = *(float (**)(void *, float *, float *, float *)) (iptr+sizeof(void *));
           fp_push(f(*(void **)iptr,p3, p2, p1));
           iptr += sizeof(void *)*2;
         }
-      break;
-      case EEL_BC_USERSTACK_PUSH:
-        {
-          UINT_PTR *sptr = *(UINT_PTR **)iptr;
-          (*sptr) += 8;
-          (*sptr) &= *(UINT_PTR*)(iptr+sizeof(void *));
-          (*sptr) |= *(UINT_PTR*)(iptr+2*sizeof(void *));
-          *(EEL_F *)*sptr = *p1;
-        }
-        iptr += sizeof(void*)*3;
-      break;
-      case EEL_BC_USERSTACK_POP:
-        {
-          UINT_PTR *sptr = *(UINT_PTR **)iptr;
-          *p1 = *(EEL_F *)*sptr;
-          (*sptr) -= 8;
-          (*sptr) &= *(UINT_PTR*)(iptr+sizeof(void *));
-          (*sptr) |= *(UINT_PTR*)(iptr+2*sizeof(void *));
-        }
-        iptr += sizeof(void*)*3;
-      break;
-      case EEL_BC_USERSTACK_POPFAST:
-        {
-          UINT_PTR *sptr = *(UINT_PTR **)iptr;
-          p1 = (EEL_F *)*sptr;
-          (*sptr) -= 8;
-          (*sptr) &= *(UINT_PTR*)(iptr+sizeof(void *));
-          (*sptr) |= *(UINT_PTR*)(iptr+2*sizeof(void *));
-        }
-        iptr += sizeof(void*)*3;
-      break;
-      case EEL_BC_USERSTACK_PEEK:
-        {
-          UINT_PTR sptr = **(UINT_PTR **)iptr;
-          sptr -= sizeof(EEL_F) * (int)(fp_pop());
-          sptr &= *(UINT_PTR*)(iptr+sizeof(void *));
-          sptr |= *(UINT_PTR*)(iptr+2*sizeof(void *));
-          p1 = (EEL_F *)sptr;
-        }
-        iptr += sizeof(void*)*3;
-      break;
-      case EEL_BC_USERSTACK_PEEK_INT:
-        {
-          UINT_PTR sptr = **(UINT_PTR **)iptr;
-          sptr -= *(UINT_PTR*)(iptr+sizeof(void*));
-          sptr &= *(UINT_PTR*)(iptr+2*sizeof(void *));
-          sptr |= *(UINT_PTR*)(iptr+3*sizeof(void *));
-          p1 = (EEL_F *)sptr;
-        }
-        iptr += sizeof(void*)*4;
-      break;
-      case EEL_BC_USERSTACK_PEEK_TOP:
-        p1 = **(EEL_F ***)iptr;
-        iptr += sizeof(void*);
-      break;
-      case EEL_BC_USERSTACK_EXCH:
-        {
-          EEL_F *p=**(EEL_F ***)iptr;
-          EEL_F a=*p;
-          *p=*p1;
-          *p1=a;
-        }
-        iptr += sizeof(void*);
       break;
     }
   }

@@ -1,0 +1,27 @@
+channels = 1;
+ptr1Sine = 0;
+fs = 48000;
+sec = 10;
+frameCount = fs * sec;
+idx = 0;
+fc1 = 1020.2;
+fc2 = 8000.015;
+// Sine wave generator
+loop(frameCount,
+t = idx / fs;
+ptr1Sine[idx] = sin($PI * 2.0 * fc1 * t) * 0.5;
+ptr1Sine[idx] += sin($PI * 2.0 * fc2 * t) * 0.5;
+idx += 1);
+// Pink noise generator
+pinkNoise = ptr1Sine + frameCount;
+pinkness = 6; // [1 - 30], 1 is blue-pinky white noise
+// You will start getting pink noise from 4. And 30 is full pink
+memuse = InitPinkNoise(pinkNoise, pinkness);
+// Print pink noise "struct" memory usage
+printf("Pink noise struct use up %d elements\n", memuse);
+// Generate pink noise sample by sample
+/*loop(frameCount,
+ptr1Sine[idx] = GeneratePinkNoise(pinkNoise, 1.0);
+idx += 1);*/
+// Write WAV file
+suc = writeWavToFile("gen6.wav", channels, fs, frameCount, ptr1Sine);

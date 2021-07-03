@@ -1,0 +1,12 @@
+npoints = 3;
+freq = 0;
+gain = freq + npoints;
+// Main code
+freq[0] = 100; // Frequency 1
+freq[1] = 500; // Frequency 2
+freq[2] = 1000; // Frequency 3
+gain[0] = -30; // Gain 1
+gain[1] = -10; // Gain 2
+gain[2] = -22; // Gain 3
+desiredFreq = 490;
+printf("Freq at %f = %f gain\n", desiredFreq, lerpAt(desiredFreq, freq, gain, npoints));

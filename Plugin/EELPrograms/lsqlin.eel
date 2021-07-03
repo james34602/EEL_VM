@@ -1,0 +1,44 @@
+@init
+Clsq = 0;
+size1 = importFLTFromStr("
+0.9501    0.7620    0.6153    0.4057
+0.2311    0.4564    0.7919    0.9354
+0.6068    0.0185    0.9218    0.9169
+0.4859    0.8214    0.7382    0.4102
+0.8912    0.4447    0.1762    0.8936", Clsq);
+dlsq = Clsq + size1;
+size2 = importFLTFromStr("
+0.0578
+0.3528
+0.8131
+0.0098
+0.1388", dlsq);
+Alsq = dlsq + size2;
+size3 = importFLTFromStr("
+0.2027    0.2721    0.7467    0.4659
+0.1987    0.1988    0.4450    0.4186
+0.6037    0.0152    0.9318    0.8462", Alsq);
+blsq = Alsq + size3;
+size4 = importFLTFromStr("
+0.5251
+0.2026
+0.6721", blsq);
+Aeqlsq = blsq + size4;
+size5 = importFLTFromStr("3,5,7,9,
+1,2,4,3", Aeqlsq);
+beqlsq = Aeqlsq + size5;
+size6 = importFLTFromStr("4.0, 2.0", beqlsq);
+lblsq = beqlsq + size6;
+size7 = importFLTFromStr("-0.0994, -0.09965, -0.09682, -0.0968", lblsq);
+ublsq = lblsq + size7;
+size8 = importFLTFromStr("1.9172, 1.9875, 1.9211, 1.889", ublsq);
+x1 = ublsq + size8;
+equationsLength = 5;
+problemLength = 4;
+equalityLen = 2;
+inequalityLen = 3;
+fval = lsqlin(equationsLength, problemLength, Clsq, dlsq, inequalityLen, Alsq, blsq, equalityLen, Aeqlsq, beqlsq, lblsq, ublsq, x1);
+printf("fval = %f\nSolution of constrainted least square:\n", fval);
+idx = 0;
+loop(problemLength, printf("%1.8f\n", x1[idx]); idx += 1);
+@sample

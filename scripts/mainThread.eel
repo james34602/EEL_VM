@@ -1,0 +1,11 @@
+// TODO: Thread system is not yet local
+inc1 = 0;
+inc2 = 0;
+stk = 8;
+threadID1 = ThreadInit("function test() local (stk) (loop(100000, inc1 += 1;);stk=5;);test();");
+threadID2 = ThreadInit("function test() local (stk) (loop(100000, inc2 += 3;);stk=5;);test();");
+ThreadCreate(threadID1);
+ThreadCreate(threadID2);
+loop(1000, printf("Val1: %d, Val2: %d\nstack test = %d\n", inc1, inc2, stk););
+ThreadJoin(threadID1);
+ThreadJoin(threadID2);

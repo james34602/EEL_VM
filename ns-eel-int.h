@@ -71,7 +71,7 @@ enum {
   FUNCTYPE_EELFUNC, // fn is a _codeHandleFunctionRec *
 };
 #define YYSTYPE opcodeRec *
-#define NSEEL_CLOSEFACTOR 0.00001
+#define NSEEL_CLOSEFACTOR 0.00001f
 typedef struct opcodeRec opcodeRec;
 typedef struct _codeHandleFunctionRec 
 {
@@ -79,27 +79,27 @@ typedef struct _codeHandleFunctionRec
   struct _codeHandleFunctionRec *derivedCopies; // separate linked list, head being the main function, other copies being derived versions
   void *startptr; // compiled code (may be cleared + recompiled when shraed)
   opcodeRec *opcodes;
-  int startptr_size; 
-  int tmpspace_req;
-  int num_params;
-  int rvMode; // RETURNVALUE_*
-  int fpStackUsage; // 0-8, usually
-  int canHaveDenormalOutput;
+  int32_t startptr_size; 
+  int32_t tmpspace_req;
+  int32_t num_params;
+  int32_t rvMode; // RETURNVALUE_*
+  int32_t fpStackUsage; // 0-8, usually
+  int32_t canHaveDenormalOutput;
   // local storage's first items are the parameters, then locals. Note that the opcodes will reference localstorage[] via VARPTRPTR, but 
   // the values localstorage[x] points are reallocated from context-to-context, if it is a common function.
   // separately allocated list of pointers, the contents of the list should be zeroed on context changes if a common function
   // note that when making variations on a function (context), it is shared, but since it is zeroed on context changes, it is context-local
-  int localstorage_size;
-  EEL_F **localstorage;
-  int isCommonFunction;
-  int usesNamespaces;
-  unsigned int parameterAsNamespaceMask;
+  int32_t localstorage_size;
+  float **localstorage;
+  int32_t isCommonFunction;
+  int32_t usesNamespaces;
+  uint32_t parameterAsNamespaceMask;
   char fname[NSEEL_MAX_FUNCSIG_NAME+1];
 } _codeHandleFunctionRec;  
 #define LLB_DSIZE (65536-64)
 typedef struct _llBlock {
   struct _llBlock *next;
-  int sizeused;
+  int32_t sizeused;
   char block[LLB_DSIZE];
 } llBlock;
 typedef struct {
@@ -107,35 +107,54 @@ typedef struct {
           *blocks_data;
   void *workTable; // references a chunk in blocks_data
   void *code;
-  int code_size; // in case the caller wants to write it out
-  int code_stats[4];
-  int want_stack;
-  void *stack;  // references a chunk in blocks_data, somewhere within the complete NSEEL_STACK_SIZE aligned at NSEEL_STACK_SIZE
+  int32_t code_size; // in case the caller wants to write it out
+  int32_t code_stats[4];
   void *ramPtr;
-  int workTable_size; // size (minus padding/extra space) of workTable -- only used if EEL_VALIDATE_WORKTABLE_USE set, but might be handy to have around too
+  int32_t workTable_size; // size (minus padding/extra space) of workTable -- only used if EEL_VALIDATE_WORKTABLE_USE set, but might be handy to have around too
 } codeHandleType;
 #include "s_str.h"
 typedef struct
 {
-	int slot, inuse;
-	int *map;
+	int32_t slot, inuse;
+	int32_t *map;
 	s_str  *m_literal_strings;
 } eel_string_context_state;
-
-#define MAX_CMD_LEN 4096
-#define HISTORY_COUNT 10000
+#define MAX_CMD_LEN 8192
+#define HISTORY_COUNT 15000
+#include "cpthread.h"
+enum thread_state
+{
+	EEL_SETUP,
+	EEL_IDLE,
+	EEL_WORKING,
+	EEL_GET_OFF_FROM_WORK
+};
 typedef struct
 {
-	int numSinks;
-	int *sinksMap;
-	int *sinksLength;
-	EEL_F **inputSink;
+	enum thread_state state;
+	pthread_cond_t work_cond;
+	pthread_mutex_t work_mtx;
+	pthread_cond_t boss_cond;
+	pthread_mutex_t boss_mtx;
+	NSEEL_CODEHANDLE codePtr;
+	pthread_t threadID;
+} abstractThreads;
+typedef struct
+{
+	uint32_t numberOfThreads;
+	uint32_t threadMap[1024];
+	abstractThreads *codePtrThreadSink[1024];
+	pthread_mutex_t globalLocker;
+	uint32_t numberOfConvolver;
+	uint32_t *convolverMap;
+	uint32_t *convolverType;
+	void **convolverSink;
   const char *(*func_check)(const char *fn_name, void *user); // return error message if not permitted
   void *func_check_user;
-  EEL_F **varTable_Values;
+  float **varTable_Values;
   char   ***varTable_Names;
-  int varTable_numBlocks;
-  int errVar,gotEndOfInput;
+  int32_t varTable_numBlocks;
+  int32_t errVar,gotEndOfInput;
   opcodeRec *result;
   char last_error_string[256];
   void *scanner;
@@ -144,112 +163,90 @@ typedef struct
           *blocks_head,  // used while compiling, transferred to code context (these are pages marked as executable)
           *blocks_head_data, // used while compiling, transferred to code context
           *pblocks; // persistent blocks, stores data used by varTable_Names, varTable_Values, etc.
-  int l_stats[4]; // source bytes, static code bytes, call code bytes, data bytes
+  int32_t l_stats[4]; // source bytes, static code bytes, call code bytes, data bytes
   _codeHandleFunctionRec *functions_local, *functions_common;
   // state used while generating functions
   struct opcodeRec *directValueCache; // linked list using fn as next
-  int isSharedFunctions;
-  int isGeneratingCommonFunction;
-  int function_usesNamespaces;
-  int function_globalFlag; // set if restrict globals to function_localTable_Names[2]
+  int32_t isSharedFunctions;
+  int32_t isGeneratingCommonFunction;
+  int32_t function_usesNamespaces;
+  int32_t function_globalFlag; // set if restrict globals to function_localTable_Names[2]
   // [0] is parameter+local symbols (combined space)
   // [1] is symbols which get implied "this." if used
   // [2] is globals permitted
-  int function_localTable_Size[3]; // for parameters only
+  int32_t function_localTable_Size[3]; // for parameters only
   char **function_localTable_Names[3]; // lists of pointers
-  EEL_F **function_localTable_ValuePtrs;
+  float **function_localTable_ValuePtrs;
   const char *function_curName; // name of current function
-  EEL_F (*onString)(void *caller_this, eelStringSegmentRec *list);
+  float (*onString)(void *caller_this, eelStringSegmentRec *list);
   codeHandleType *tmpCodeHandle;
-  struct
-  {
-	  int memused;
-    int needfree;
-    int maxblocks;
-	double closefact;
-    EEL_F *blocks[NSEEL_RAM_BLOCKS];
-  } ram_state
-#ifdef __GNUC__
-    __attribute__ ((aligned (8)))
-#endif
-   ;
-  void *gram_blocks, *caller_this;
+  float ram_state[NSEEL_RAM_ITEMSPERBLOCK];
+  void *caller_this;
   eel_string_context_state *m_string_context;
-  char printfbuf[MAX_CMD_LEN];
+  char printfbuf[20000];
 } compileContext;
-void *NSEEL_PProc_RAM(void *data, int data_size, compileContext *ctx);
-void *NSEEL_PProc_THIS(void *data, int data_size, compileContext *ctx);
-extern EEL_BC_TYPE _asm_generic3parm[]; // 3 double * parms, returning double *
-extern EEL_BC_TYPE _asm_generic3parm_retd[]; // 3 double * parms, returning double
-extern EEL_BC_TYPE _asm_generic2parm[]; // 2 double * parms, returning double *
-extern EEL_BC_TYPE _asm_generic2parm_retd[]; // 2 double * parms, returning double
-extern EEL_BC_TYPE _asm_generic1parm[]; // 1 double * parms, returning double *
-extern EEL_BC_TYPE _asm_generic1parm_retd[]; // 1 double * parms, returning double 
+void *NSEEL_PProc_RAM(void *data, int32_t data_size, compileContext *ctx);
+void *NSEEL_PProc_THIS(void *data, int32_t data_size, compileContext *ctx);
+extern EEL_BC_TYPE _asm_generic3parm[]; // 3 float * parms, returning float *
+extern EEL_BC_TYPE _asm_generic3parm_retd[]; // 3 float * parms, returning float
+extern EEL_BC_TYPE _asm_generic2parm[]; // 2 float * parms, returning float *
+extern EEL_BC_TYPE _asm_generic2parm_retd[]; // 2 float * parms, returning float
+extern EEL_BC_TYPE _asm_generic1parm[]; // 1 float * parms, returning float *
+extern EEL_BC_TYPE _asm_generic1parm_retd[]; // 1 float * parms, returning float 
 extern const void *const _asm_generic1parm_retd_end;
 extern const void *const _asm_generic1parm_end;
 extern const void *const _asm_generic2parm_retd_end;
 extern const void *const _asm_generic2parm_end;
 extern const void *const _asm_generic3parm_retd_end;
 extern const void *const _asm_generic3parm_end;
-#if EEL_F_SIZE == 4
-#define EEL_F_SSTR "4"
-#define EEL_F_SUFFIX "s"
-#else
-#define EEL_F_SSTR "8"
-#define EEL_F_SUFFIX "l"
-#endif
 #define NSEEL_VARS_PER_BLOCK 64
 #define NSEEL_NPARAMS_FLAG_CONST 0x80000
-typedef void *(*NSEEL_PPPROC)(void *data, int data_size, compileContext *userfunc_data);
+typedef void *(*NSEEL_PPPROC)(void *data, int32_t data_size, compileContext *userfunc_data);
 typedef struct
 {
       const char *name;
       void *afunc;
       void *func_e;
-      int nParams;
+      int32_t nParams;
       void *replptrs[4];
       NSEEL_PPPROC pProc;
 } functionType;
 typedef struct
 {
-  int refcnt;
+  int32_t refcnt;
   char isreg;
 } varNameHdr;
-opcodeRec *nseel_createCompiledValue(compileContext *ctx, EEL_F value);
-opcodeRec *nseel_createCompiledValuePtr(compileContext *ctx, EEL_F *addrValue, const char *namestr);
+opcodeRec *nseel_createCompiledValue(compileContext *ctx, float value);
+opcodeRec *nseel_createCompiledValuePtr(compileContext *ctx, float *addrValue, const char *namestr);
 opcodeRec *nseel_createMoreParametersOpcode(compileContext *ctx, opcodeRec *code1, opcodeRec *code2);
-opcodeRec *nseel_createSimpleCompiledFunction(compileContext *ctx, int fn, int np, opcodeRec *code1, opcodeRec *code2);
+opcodeRec *nseel_createSimpleCompiledFunction(compileContext *ctx, int32_t fn, int32_t np, opcodeRec *code1, opcodeRec *code2);
 opcodeRec *nseel_createMemoryAccess(compileContext *ctx, opcodeRec *code1, opcodeRec *code2);
 opcodeRec *nseel_createIfElse(compileContext *ctx, opcodeRec *code1, opcodeRec *code2, opcodeRec *code3);
-opcodeRec *nseel_createFunctionByName(compileContext *ctx, const char *name, int np, opcodeRec *code1, opcodeRec *code2, opcodeRec *code3);
+opcodeRec *nseel_createFunctionByName(compileContext *ctx, const char *name, int32_t np, opcodeRec *code1, opcodeRec *code2, opcodeRec *code3);
 // converts a generic identifier (VARPTR) opcode into either an actual variable reference (parmcnt = -1),
 // or if parmcnt >= 0, to a function call (see nseel_setCompiledFunctionCallParameters())
-opcodeRec *nseel_resolve_named_symbol(compileContext *ctx, opcodeRec *rec, int parmcnt, int *errOut); 
+opcodeRec *nseel_resolve_named_symbol(compileContext *ctx, opcodeRec *rec, int32_t parmcnt, int32_t *errOut); 
 // sets parameters and calculates parameter count for opcode, and calls nseel_resolve_named_symbol() with the right
 // parameter count
-opcodeRec *nseel_setCompiledFunctionCallParameters(compileContext *ctx, opcodeRec *fn, opcodeRec *code1, opcodeRec *code2, opcodeRec *code3, opcodeRec *postCode, int *errOut); 
+opcodeRec *nseel_setCompiledFunctionCallParameters(compileContext *ctx, opcodeRec *fn, opcodeRec *code1, opcodeRec *code2, opcodeRec *code3, opcodeRec *postCode, int32_t *errOut); 
 // errOut will be set if return NULL:
 // -1 if postCode set when not wanted (i.e. not while())
 // 0 if func not found, 
 // 1 if function requires 2+ parameters but was given more
 // 2 if function needs more parameters
 // 4 if function requires 1 parameter but was given more
-eelStringSegmentRec *nseel_createStringSegmentRec(compileContext *ctx, const char *str, int len);
+eelStringSegmentRec *nseel_createStringSegmentRec(compileContext *ctx, const char *str, int32_t len);
 opcodeRec *nseel_eelMakeOpcodeFromStringSegments(compileContext *ctx, eelStringSegmentRec *rec);
-EEL_F *nseel_int_register_var(compileContext *ctx, const char *name, int isReg, const char **namePtrOut);
+float *nseel_int_register_var(compileContext *ctx, const char *name, int32_t isReg, const char **namePtrOut);
 _codeHandleFunctionRec *eel_createFunctionNamespacedInstance(compileContext *ctx, _codeHandleFunctionRec *fr, const char *nameptr);
 // nseel_simple_tokenizer will return comments as tokens if state is non-NULL
-const char *nseel_simple_tokenizer(const char **ptr, const char *endptr, int *lenOut, int *state);
-int nseel_filter_escaped_string(char *outbuf, int outbuf_sz, const char *rdptr, size_t rdptr_size, char delim_char); // returns length used, minus NUL char
+const char *nseel_simple_tokenizer(const char **ptr, const char *endptr, int32_t *lenOut, int32_t *state);
+int32_t nseel_filter_escaped_string(char *outbuf, int32_t outbuf_sz, const char *rdptr, size_t rdptr_size, char delim_char); // returns length used, minus NUL char
 opcodeRec *nseel_translate(compileContext *ctx, const char *tmp, size_t tmplen); // tmplen=0 for nul-term
-EEL_F * NSEEL_CGEN_CALL __NSEEL_RAMAlloc(EEL_F **blocks, unsigned int w);
-EEL_F * NSEEL_CGEN_CALL __NSEEL_RAM_MemSet(EEL_F **blocks,EEL_F *dest, EEL_F *v, EEL_F *lenptr);
-EEL_F * NSEEL_CGEN_CALL __NSEEL_RAM_MemFree(void *blocks, EEL_F *which);
-EEL_F * NSEEL_CGEN_CALL __NSEEL_RAM_MemTop(void *blocks, EEL_F *which);
-EEL_F * NSEEL_CGEN_CALL __NSEEL_RAM_MemCpy(EEL_F **blocks,EEL_F *dest, EEL_F *src, EEL_F *lenptr);
-EEL_F NSEEL_CGEN_CALL __NSEEL_RAM_Mem_SetValues(EEL_F **blocks, INT_PTR np, EEL_F **parms);
-EEL_F NSEEL_CGEN_CALL __NSEEL_RAM_Mem_GetValues(EEL_F **blocks, INT_PTR np, EEL_F **parms);
-extern EEL_F nseel_ramalloc_onfail; // address returned by __NSEEL_RAMAlloc et al on failure
+#define __NSEEL_RAMAlloc(pblocks, w) (pblocks + w)
+float * NSEEL_CGEN_CALL __NSEEL_RAM_MemSet(float *blocks,float *dest, float *v, float *lenptr);
+float * NSEEL_CGEN_CALL __NSEEL_RAM_MemCpy(float *blocks,float *dest, float *src, float *lenptr);
+extern float NSEEL_CGEN_CALL nseel_int_rand(float amplitude);
 #ifdef __cplusplus
 }
 #endif

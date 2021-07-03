@@ -42,7 +42,7 @@
 #define inline __inline
 #endif
 
-#define PI 3.1415926535897932384626433832795
+#define PI 3.1415926535897932384626433832795f
 
 static WDL_FFT_COMPLEX d16[3];
 static WDL_FFT_COMPLEX d32[7];
@@ -60,7 +60,7 @@ static WDL_FFT_COMPLEX d32768[4095];
 
 #define sqrthalf (d16[1].re)
 
-#define VOL *(volatile EEL_F *)&
+#define VOL *(volatile float *)&
 
 #define TRANSFORM(a0,a1,a2,a3,wre,wim) { \
   t6 = a2.re; \
@@ -270,7 +270,7 @@ static WDL_FFT_COMPLEX d32768[4095];
 
 static void c2(register WDL_FFT_COMPLEX *a)
 {
-  register EEL_F t1;
+  register float t1;
 
   t1 = a[1].re;
   a[1].re = a[0].re - t1;
@@ -283,7 +283,7 @@ static void c2(register WDL_FFT_COMPLEX *a)
 
 static inline void c4(register WDL_FFT_COMPLEX *a)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
 
   t5 = a[2].re;
   t1 = a[0].re - t5;
@@ -314,7 +314,7 @@ static inline void c4(register WDL_FFT_COMPLEX *a)
 
 static void c8(register WDL_FFT_COMPLEX *a)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
 
   t7 = a[4].im;
   t4 = a[0].im - t7;
@@ -397,7 +397,7 @@ static void c8(register WDL_FFT_COMPLEX *a)
 
 static void c16(register WDL_FFT_COMPLEX *a)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
 
   TRANSFORMZERO(a[0],a[4],a[8],a[12]);
   TRANSFORM(a[1],a[5],a[9],a[13],d16[0].re,d16[0].im);
@@ -410,9 +410,9 @@ static void c16(register WDL_FFT_COMPLEX *a)
 }
 
 /* a[0...8n-1], w[0...2n-2]; n >= 2 */
-static void cpass(register WDL_FFT_COMPLEX *a,register const WDL_FFT_COMPLEX *w,register unsigned int n)
+static void cpass(register WDL_FFT_COMPLEX *a,register const WDL_FFT_COMPLEX *w,register uint32_t n)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
   register WDL_FFT_COMPLEX *a1;
   register WDL_FFT_COMPLEX *a2;
   register WDL_FFT_COMPLEX *a3;
@@ -478,13 +478,13 @@ static void c512(register WDL_FFT_COMPLEX *a)
 }
 
 /* a[0...8n-1], w[0...n-2]; n even, n >= 4 */
-static void cpassbig(register WDL_FFT_COMPLEX *a,register const WDL_FFT_COMPLEX *w,register unsigned int n)
+static void cpassbig(register WDL_FFT_COMPLEX *a,register const WDL_FFT_COMPLEX *w,register uint32_t n)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
   register WDL_FFT_COMPLEX *a1;
   register WDL_FFT_COMPLEX *a2;
   register WDL_FFT_COMPLEX *a3;
-  register unsigned int k;
+  register uint32_t k;
 
   a2 = a + 4 * n;
   a1 = a + 2 * n;
@@ -578,9 +578,9 @@ static void c32768(register WDL_FFT_COMPLEX *a)
 
 
 /* n even, n > 0 */
-void WDL_fft_complexmul(WDL_FFT_COMPLEX *a,WDL_FFT_COMPLEX *b,int n)
+void WDL_fft_complexmul(WDL_FFT_COMPLEX *a,WDL_FFT_COMPLEX *b,int32_t n)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
   if (n<2 || (n&1)) return;
 
   do {
@@ -605,9 +605,9 @@ void WDL_fft_complexmul(WDL_FFT_COMPLEX *a,WDL_FFT_COMPLEX *b,int n)
   } while (n -= 2);
 }
 
-void WDL_fft_complexmul2(WDL_FFT_COMPLEX *c, WDL_FFT_COMPLEX *a, WDL_FFT_COMPLEX *b, int n)
+void WDL_fft_complexmul2(WDL_FFT_COMPLEX *c, WDL_FFT_COMPLEX *a, WDL_FFT_COMPLEX *b, int32_t n)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
   if (n<2 || (n&1)) return;
 
   do {
@@ -632,9 +632,9 @@ void WDL_fft_complexmul2(WDL_FFT_COMPLEX *c, WDL_FFT_COMPLEX *a, WDL_FFT_COMPLEX
     c += 2;
   } while (n -= 2);
 }
-void WDL_fft_complexmul3(WDL_FFT_COMPLEX *c, WDL_FFT_COMPLEX *a, WDL_FFT_COMPLEX *b, int n)
+void WDL_fft_complexmul3(WDL_FFT_COMPLEX *c, WDL_FFT_COMPLEX *a, WDL_FFT_COMPLEX *b, int32_t n)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
   if (n<2 || (n&1)) return;
 
   do {
@@ -663,7 +663,7 @@ void WDL_fft_complexmul3(WDL_FFT_COMPLEX *c, WDL_FFT_COMPLEX *a, WDL_FFT_COMPLEX
 
 static inline void u4(register WDL_FFT_COMPLEX *a)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
 
   t1 = VOL a[1].re;
   t3 = a[0].re - t1;
@@ -695,7 +695,7 @@ static inline void u4(register WDL_FFT_COMPLEX *a)
 
 static void u8(register WDL_FFT_COMPLEX *a)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
 
   u4(a);
 
@@ -781,7 +781,7 @@ static void u8(register WDL_FFT_COMPLEX *a)
 
 static void u16(register WDL_FFT_COMPLEX *a)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
 
   u8(a);
   u4(a + 8);
@@ -794,9 +794,9 @@ static void u16(register WDL_FFT_COMPLEX *a)
 }
 
 /* a[0...8n-1], w[0...2n-2] */
-static void upass(register WDL_FFT_COMPLEX *a,register const WDL_FFT_COMPLEX *w,register unsigned int n)
+static void upass(register WDL_FFT_COMPLEX *a,register const WDL_FFT_COMPLEX *w,register uint32_t n)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
   register WDL_FFT_COMPLEX *a1;
   register WDL_FFT_COMPLEX *a2;
   register WDL_FFT_COMPLEX *a3;
@@ -863,13 +863,13 @@ static void u512(register WDL_FFT_COMPLEX *a)
 
 
 /* a[0...8n-1], w[0...n-2]; n even, n >= 4 */
-static void upassbig(register WDL_FFT_COMPLEX *a,register const WDL_FFT_COMPLEX *w,register unsigned int n)
+static void upassbig(register WDL_FFT_COMPLEX *a,register const WDL_FFT_COMPLEX *w,register uint32_t n)
 {
-  register EEL_F t1, t2, t3, t4, t5, t6, t7, t8;
+  register float t1, t2, t3, t4, t5, t6, t7, t8;
   register WDL_FFT_COMPLEX *a1;
   register WDL_FFT_COMPLEX *a2;
   register WDL_FFT_COMPLEX *a3;
-  register unsigned int k;
+  register uint32_t k;
 
   a2 = a + 4 * n;
   a1 = a + 2 * n;
@@ -964,19 +964,19 @@ static void u32768(register WDL_FFT_COMPLEX *a)
 }
 
 
-static void __fft_gen(WDL_FFT_COMPLEX *buf, const WDL_FFT_COMPLEX *buf2, int sz, int isfull)
+static void __fft_gen(WDL_FFT_COMPLEX *buf, const WDL_FFT_COMPLEX *buf2, int32_t sz, int32_t isfull)
 {
-  int x;
-  double div=PI*0.25/(sz+1);
+  int32_t x;
+  float div=PI*0.25f/(sz+1);
 
-  if (isfull) div*=2.0;
+  if (isfull) div*=2.0f;
 
   for (x = 0; x < sz; x ++)
   {
     if (!(x & 1) || !buf2)
     {
-      buf[x].re = (EEL_F) cos((x+1)*div);
-      buf[x].im = (EEL_F) sin((x+1)*div);
+      buf[x].re = (float) cos((x+1)*div);
+      buf[x].im = (float) sin((x+1)*div);
     }
     else
     {
@@ -988,9 +988,9 @@ static void __fft_gen(WDL_FFT_COMPLEX *buf, const WDL_FFT_COMPLEX *buf2, int sz,
 
 #ifndef WDL_FFT_NO_PERMUTE
 
-static unsigned int fftfreq_c(unsigned int i,unsigned int n)
+static uint32_t fftfreq_c(uint32_t i,uint32_t n)
 {
-  unsigned int m;
+  uint32_t m;
 
   if (n <= 2) return i;
 
@@ -1004,11 +1004,11 @@ static unsigned int fftfreq_c(unsigned int i,unsigned int n)
   return ((fftfreq_c(i,m) << 2) - 1) & (n - 1);
 }
 
-static int _idxperm[2<<FFT_MAXBITLEN];
+static int32_t _idxperm[2<<FFT_MAXBITLEN];
 
-static void idx_perm_calc(int offs, int n)
+static void idx_perm_calc(int32_t offs, int32_t n)
 {
-	int i, j;
+	int32_t i, j;
 	_idxperm[offs] = 0;
 	for (i = 1; i < n; ++i) {
 		j = fftfreq_c(i, n);
@@ -1016,11 +1016,11 @@ static void idx_perm_calc(int offs, int n)
 	}
 }
 
-int WDL_fft_permute(int fftsize, int idx)
+int32_t WDL_fft_permute(int32_t fftsize, int32_t idx)
 {
   return _idxperm[fftsize+idx-2];
 }
-int *WDL_fft_permute_tab(int fftsize)
+int32_t *WDL_fft_permute_tab(int32_t fftsize)
 {
   return _idxperm + fftsize - 2;
 }
@@ -1030,10 +1030,10 @@ int *WDL_fft_permute_tab(int fftsize)
 
 void WDL_fft_init()
 {
-  static int ffttabinit;
+  static int32_t ffttabinit;
   if (!ffttabinit)
   {
-    int i, offs;
+    int32_t i, offs;
   	ffttabinit=1;
 
 #define fft_gen(x,y,z) __fft_gen(x,y,sizeof(x)/sizeof(x[0]),z)
@@ -1063,7 +1063,7 @@ void WDL_fft_init()
   }
 }
 
-void WDL_fft(WDL_FFT_COMPLEX *buf, int len, int isInverse)
+void WDL_fft(WDL_FFT_COMPLEX *buf, int32_t len, int32_t isInverse)
 {
   switch (len)
   {
@@ -1087,9 +1087,9 @@ void WDL_fft(WDL_FFT_COMPLEX *buf, int len, int isInverse)
   }
 }
 
-static inline void r2(register EEL_F *a)
+static inline void r2(register float *a)
 {
-  register EEL_F t1, t2;
+  register float t1, t2;
 
   t1 = a[0] + a[1];
   t2 = a[0] - a[1];
@@ -1097,9 +1097,9 @@ static inline void r2(register EEL_F *a)
   a[1] = t2 * 2;
 }
 
-static inline void v2(register EEL_F *a)
+static inline void v2(register float *a)
 {
-  register EEL_F t1, t2;
+  register float t1, t2;
 
   t1 = a[0] + a[1];
   t2 = a[0] - a[1];
@@ -1107,14 +1107,14 @@ static inline void v2(register EEL_F *a)
   a[1] = t2;
 }
 
-static void two_for_one(EEL_F* buf, const WDL_FFT_COMPLEX *d, int len, int isInverse)
+static void two_for_one(float* buf, const WDL_FFT_COMPLEX *d, int32_t len, int32_t isInverse)
 {
-  const unsigned int half = (unsigned)len >> 1, quart = half >> 1, eighth = quart >> 1;
-  const int *permute = WDL_fft_permute_tab(half);
-  unsigned int i, j;
+  const uint32_t half = (unsigned)len >> 1, quart = half >> 1, eighth = quart >> 1;
+  const int32_t *permute = WDL_fft_permute_tab(half);
+  uint32_t i, j;
 
   WDL_FFT_COMPLEX *p, *q, tw, sum, diff;
-  EEL_F tw1, tw2;
+  float tw1, tw2;
 
   if (!isInverse)
   {
@@ -1176,7 +1176,7 @@ static void two_for_one(EEL_F* buf, const WDL_FFT_COMPLEX *d, int len, int isInv
   if (isInverse) WDL_fft((WDL_FFT_COMPLEX*)buf, half, isInverse);
 }
 
-void WDL_real_fft(EEL_F* buf, int len, int isInverse)
+void WDL_real_fft(float* buf, int32_t len, int32_t isInverse)
 {
   switch (len)
   {
@@ -1199,23 +1199,23 @@ void WDL_real_fft(EEL_F* buf, int len, int isInverse)
   }
 }
 
-static int s_tab[(2 << EEL_FFT_MAXBITLEN) + 24 * (EEL_FFT_MAXBITLEN - EEL_FFT_MINBITLEN_REORDER + 1)]; // big 256kb table, ugh
-int *fft_reorder_table_for_bitsize(int bitsz)
+static int32_t s_tab[(2 << EEL_FFT_MAXBITLEN) + 24 * (EEL_FFT_MAXBITLEN - EEL_FFT_MINBITLEN_REORDER + 1)]; // big 256kb table, ugh
+int32_t *fft_reorder_table_for_bitsize(int32_t bitsz)
 {
 	if (bitsz <= EEL_FFT_MINBITLEN_REORDER)
 		return s_tab;
 	return s_tab + (1 << bitsz) + (bitsz - EEL_FFT_MINBITLEN_REORDER) * 24;
 }
-void fft_make_reorder_table(int bitsz, int *tab)
+void fft_make_reorder_table(int32_t bitsz, int32_t *tab)
 {
-	const int fft_sz = 1 << bitsz;
+	const int32_t fft_sz = 1 << bitsz;
 	char flag[1 << EEL_FFT_MAXBITLEN];
-	int x;
+	int32_t x;
 	memset(flag, 0, fft_sz);
 
 	for (x = 0; x < fft_sz; x++)
 	{
-		int fx;
+		int32_t fx;
 		if (!flag[x] && (fx = WDL_fft_permute(fft_sz, x)) != x)
 		{
 			flag[x] = 1;
@@ -1236,6 +1236,6 @@ void initFFTData()
 {
 	WDL_fft_init();
 	fft_reorder_table_for_bitsize(EEL_FFT_MINBITLEN_REORDER);
-	for (int x = EEL_FFT_MINBITLEN_REORDER; x <= EEL_FFT_MAXBITLEN; x++)
+	for (int32_t x = EEL_FFT_MINBITLEN_REORDER; x <= EEL_FFT_MAXBITLEN; x++)
 		fft_make_reorder_table(x, fft_reorder_table_for_bitsize(x));
 }
