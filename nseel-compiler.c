@@ -3411,7 +3411,7 @@ void JamesDSPOfflineResampling(float const *in, float *out, size_t lenIn, size_t
 		printf("\n%s\n\n", src_strerror(error));
 	}
 }
-float *decompressedCoefficients;
+float *decompressedCoefficients = 0;
 #define DR_FLAC_IMPLEMENTATION
 #include "dr_flac.h"
 #define DR_WAV_IMPLEMENTATION
@@ -4212,6 +4212,8 @@ void printFunctions()
 void NSEEL_start()
 {
 	// Global memory
+	if (decompressedCoefficients)
+		free(decompressedCoefficients);
 	decompressedCoefficients = (float*)malloc(22438 * sizeof(float));
 	decompressResamplerMQ(compressedCoeffMQ, decompressedCoefficients);
 	initFFTData();
@@ -4220,6 +4222,7 @@ void NSEEL_start()
 void NSEEL_quit()
 {
 	free(decompressedCoefficients);
+	decompressedCoefficients = 0;
 }
 //---------------------------------------------------------------------------------------------------------------
 static void freeBlocks(llBlock **start)
