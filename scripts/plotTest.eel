@@ -1,12 +1,15 @@
+arrayLen = arrayLen;
 x1 = 0;
-y1 = x1 + 110;
-x2 = y1 + 110;
-y2 = x2 + 110;
+y1 = x1 + arrayLen;
+x2 = y1 + arrayLen;
+y2 = x2 + arrayLen;
 i = 0;
-loop(110,
+loop(arrayLen,
 x1[i] = i + 1.0;
 y1[i] = log(i / 100.0);
 x2[i] = i + 1.0;
 y2[i] = exp(i / 100.0);
 i += 1);
-plot("fas",640,480,110,x1,y1,x2,y2)
+
+obj = getPlotObject(640, 480);
+plot(obj, arrayLen, x1, y1);

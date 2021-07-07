@@ -4221,7 +4221,8 @@ void NSEEL_start()
 }
 void NSEEL_quit()
 {
-	free(decompressedCoefficients);
+	if (decompressedCoefficients)
+		free(decompressedCoefficients);
 	decompressedCoefficients = 0;
 }
 //---------------------------------------------------------------------------------------------------------------
