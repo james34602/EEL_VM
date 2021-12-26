@@ -1,12 +1,6 @@
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "../../eelCommon.h"
-extern "C"
-{
-#include "lua/lua.h"
-#include "lua/lauxlib.h"
-#include "lua/lualib.h"
-}
 class LiveProgrammableDSP : public AudioProcessor, public AudioProcessorValueTreeState::Listener
 {
 public:
@@ -41,15 +35,9 @@ public:
 	NSEEL_VMCTX vm;
 	NSEEL_CODEHANDLE codehandleInit, codehandleProcess;
 	float *vmFs, *input1, *input2, *input3, *input4, *input5, *input6;
-	// Lua VM
-	lua_State *actualLuaVM;
-	int luaStructRef, luaProcessRef;
 	//
 	void LoadEELCode(char *codeTextInit, char *codeTextProcess);
-	void LoadLuaCode(const char *eelCode, size_t strLen);
 	int compileEEL(const char *eelCode, size_t strLen);
-	int validateLua(const char *eelCode, size_t strLen);
-	int compileLua(const char *eelCode, size_t strLen);
 	void playButtonClicked(String codetext);
 	String restoredText;
 
