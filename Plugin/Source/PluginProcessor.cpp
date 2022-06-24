@@ -172,7 +172,6 @@ void LiveProgrammableDSP::processBlock(AudioBuffer<float>& buffer, MidiBuffer&)
 {
 	// number of samples per buffer
 	const int n = buffer.getNumSamples();
-	const int pcmChannels = 6;
 	// input channels
 	const float *inputs[6] = { buffer.getReadPointer(0), buffer.getReadPointer(1), buffer.getReadPointer(2), buffer.getReadPointer(3), buffer.getReadPointer(4), buffer.getReadPointer(5) };
 	// output channels
