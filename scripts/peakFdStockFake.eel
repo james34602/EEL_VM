@@ -1,0 +1,42 @@
+function getNextPrice(volatilityLow, volatilityHigh, minPrice, maxPrice) local(oldPrice)
+(
+  // Instead of a fixed volatility, pick a random volatility each time, between volatilityLow and volatilityHigh.
+  volatility = rand(1.0) * volatilityHigh + volatilityLow;
+  changePercent = 2.0 * volatility * rand(1.0);
+  (changePercent > volatility) ? (changePercent -= (2.0 * volatility));
+  (oldPrice == 0.0) ? (oldPrice = minPrice;);
+  changeAmount = oldPrice * changePercent / 100.0;
+  newPrice = oldPrice + changeAmount;
+  // Add a ceiling and floor.
+  (newPrice < minPrice) ? (newPrice += abs(changeAmount) * 2.0;)
+  : (
+  (newPrice > maxPrice) ? (newPrice -= abs(changeAmount) * 2.0;)
+  );
+  oldPrice = newPrice;
+  newPrice;
+);
+channels = 1;
+ptr1Sine = 0;
+fs = 48000;
+sec = 0.55;
+frameCount = floor(fs * sec);
+idx = 0;
+// Generate fake stock data sample by sample
+volatilityLow = 0.1;
+volatilityHigh = 2.2;
+minPrice = 0.2;
+maxPrice = 2.0;
+idx = 0;
+loop(frameCount,
+ptr1Sine[idx] = getNextPrice(volatilityLow, volatilityHigh, minPrice, maxPrice) - minPrice * 2.0;
+idx += 1);
+indices = ptr1Sine + frameCount;
+thres = maxVec(ptr1Sine, frameCount); // Find max
+printf("thres: %1.8f\n", thres);
+numPks = peakFinder(ptr1Sine, frameCount, thres, 0, indices);
+idx = 0;
+loop(numPks,
+printf("%d\n", indices[idx]);
+idx += 1);
+// Write WAV file
+suc = writeWavToFile("gen6.wav", channels, fs, frameCount, ptr1Sine);
