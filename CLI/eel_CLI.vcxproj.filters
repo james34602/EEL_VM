@@ -9,116 +9,24 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="NumericSystem">
+    <Filter Include="Source Files\NumericSystem">
       <UniqueIdentifier>{9958ec9e-4979-43dd-82b7-f52442982d8b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NumericSystem\SolveLinearSystem">
+    <Filter Include="Source Files\NumericSystem\SolveLinearSystem">
       <UniqueIdentifier>{271818cf-f7af-4791-b683-aff16a957a61}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NumericSystem\FilterDesign">
+    <Filter Include="Source Files\NumericSystem\FilterDesign">
       <UniqueIdentifier>{53465abb-4ae4-4652-b058-6326b892bcde}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NumericSystem\libsamplerate">
+    <Filter Include="Source Files\NumericSystem\libsamplerate">
       <UniqueIdentifier>{48752e49-d938-49a8-bd59-ffdb4d790d07}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\cpthread.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\nseel-compiler.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\nseel-ram.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\loose_eel.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fft.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\codelet.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\cpoly.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\FFTConvolver.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\FilterDesign\cos_fib_paraunitary.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\FilterDesign\eqnerror.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\FilterDesign\firls.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\FilterDesign\generalFdesign.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\libsamplerate\samplerate.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\libsamplerate\src_sinc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\MersenneTwister.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\quadprog.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\SolveLinearSystem\inv.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\SolveLinearSystem\mldivide.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\SolveLinearSystem\mrdivide.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\SolveLinearSystem\pinv.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\SolveLinearSystem\qr_fact.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\numericSys\solvopt.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\s_str.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\y.tab.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fsa.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\cpthread.h">
+    <ClInclude Include="..\stb_sprintf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\dirent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\dr_flac.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\dr_mp3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\dr_wav.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\eelCommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\eel_matrix.h">
+    <ClInclude Include="..\s_str.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\ns-eel-int.h">
@@ -127,44 +35,148 @@
     <ClInclude Include="..\ns-eel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\fft.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\glue_port.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\numericSys\codelet.h">
+    <ClInclude Include="..\fft.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\eelCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\eel_matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dr_wav.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dr_mp3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dr_flac.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\dirent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cpthread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\numericSys\codelet.h">
+      <Filter>Source Files\NumericSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\numericSys\cpoly.h">
+      <Filter>Source Files\NumericSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\numericSys\FFTConvolver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\numericSys\FilterDesign\fdesign.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\numericSys\libsamplerate\common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\numericSys\libsamplerate\samplerate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\numericSys\libsamplerate\src_config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\numericSys\polyphase.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\NumericSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\numericSys\quadprog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\numericSys\SolveLinearSystem\qr_fact.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\NumericSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\numericSys\solvopt.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\NumericSystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\s_str.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\numericSys\FilterDesign\fdesign.h">
+      <Filter>Source Files\NumericSystem\FilterDesign</Filter>
     </ClInclude>
+    <ClInclude Include="..\numericSys\FilterDesign\polyphaseASRC.h">
+      <Filter>Source Files\NumericSystem\FilterDesign</Filter>
+    </ClInclude>
+    <ClInclude Include="..\numericSys\FilterDesign\polyphaseFilterbank.h">
+      <Filter>Source Files\NumericSystem\FilterDesign</Filter>
+    </ClInclude>
+    <ClInclude Include="..\numericSys\libsamplerate\common.h">
+      <Filter>Source Files\NumericSystem\libsamplerate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\numericSys\libsamplerate\samplerate.h">
+      <Filter>Source Files\NumericSystem\libsamplerate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\numericSys\libsamplerate\src_config.h">
+      <Filter>Source Files\NumericSystem\libsamplerate</Filter>
+    </ClInclude>
+    <ClInclude Include="..\numericSys\SolveLinearSystem\qr_fact.h">
+      <Filter>Source Files\NumericSystem\SolveLinearSystem</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\y.tab.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\s_str.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nseel-ram.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nseel-compiler.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\loose_eel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\fft.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cpthread.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\codelet.c">
+      <Filter>Source Files\NumericSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\cpoly.c">
+      <Filter>Source Files\NumericSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\FFTConvolver.c">
+      <Filter>Source Files\NumericSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\MersenneTwister.c">
+      <Filter>Source Files\NumericSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\quadprog.c">
+      <Filter>Source Files\NumericSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\solvopt.c">
+      <Filter>Source Files\NumericSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\FilterDesign\cos_fib_paraunitary.c">
+      <Filter>Source Files\NumericSystem\FilterDesign</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\FilterDesign\eqnerror.c">
+      <Filter>Source Files\NumericSystem\FilterDesign</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\FilterDesign\firls.c">
+      <Filter>Source Files\NumericSystem\FilterDesign</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\FilterDesign\generalFdesign.c">
+      <Filter>Source Files\NumericSystem\FilterDesign</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\FilterDesign\polyphaseASRC.c">
+      <Filter>Source Files\NumericSystem\FilterDesign</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\FilterDesign\polyphaseFilterbank.c">
+      <Filter>Source Files\NumericSystem\FilterDesign</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\libsamplerate\samplerate.c">
+      <Filter>Source Files\NumericSystem\libsamplerate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\libsamplerate\src_sinc.c">
+      <Filter>Source Files\NumericSystem\libsamplerate</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\SolveLinearSystem\inv.c">
+      <Filter>Source Files\NumericSystem\SolveLinearSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\SolveLinearSystem\mldivide.c">
+      <Filter>Source Files\NumericSystem\SolveLinearSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\SolveLinearSystem\mrdivide.c">
+      <Filter>Source Files\NumericSystem\SolveLinearSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\SolveLinearSystem\pinv.c">
+      <Filter>Source Files\NumericSystem\SolveLinearSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\numericSys\SolveLinearSystem\qr_fact.c">
+      <Filter>Source Files\NumericSystem\SolveLinearSystem</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

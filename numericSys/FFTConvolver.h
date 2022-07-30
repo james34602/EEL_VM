@@ -1,10 +1,6 @@
 #ifndef _FFTCONVOLVER_FFTCONVOLVER_H
 #define _FFTCONVOLVER_FFTCONVOLVER_H
-
-#ifndef min
-#define min(a,b) (((a)<(b))?(a):(b))
-#endif
-unsigned int upper_power_of_two(unsigned int v);
+extern unsigned int upper_power_of_two(unsigned int v);
 /**
 * @class FFTConvolver1x1
 * @brief Implementation of a partitioned FFT convolution algorithm with uniform block size
@@ -126,10 +122,10 @@ typedef struct
 	float gain; // float32, it's perfectly safe to have blockSize == 2097152, however, it's impractical to have such large block
 	void(*fft)(float*, const float*);
 } FFTConvolver1x2;
-void FFTConvolver1x1Init(FFTConvolver1x1 *conv);
-void FFTConvolver2x4x2Init(FFTConvolver2x4x2 *conv);
-void FFTConvolver2x2Init(FFTConvolver2x2 *conv);
-void FFTConvolver1x2Init(FFTConvolver1x2 *conv);
+extern void FFTConvolver1x1Init(FFTConvolver1x1 *conv);
+extern void FFTConvolver2x4x2Init(FFTConvolver2x4x2 *conv);
+extern void FFTConvolver2x2Init(FFTConvolver2x2 *conv);
+extern void FFTConvolver1x2Init(FFTConvolver1x2 *conv);
 
 /**
 * @brief Initializes the convolver
@@ -149,16 +145,23 @@ int FFTConvolver1x2LoadImpulseResponse(FFTConvolver1x2 *conv, unsigned int block
 * @param output The convolution result
 * @param len Number of input/output samples
 */
-void FFTConvolver1x1Process(FFTConvolver1x1 *conv, const float* input, float* output, unsigned int len);
-void FFTConvolver2x4x2Process(FFTConvolver2x4x2 *conv, const float* x1, const float* x2, float* y1, float* y2, unsigned int len);
-void FFTConvolver2x2Process(FFTConvolver2x2 *conv, const float* x1, const float* x2, float* y1, float* y2, unsigned int len);
-void FFTConvolver1x2Process(FFTConvolver1x2 *conv, const float* x, float* y1, float* y2, unsigned int len);
+extern void FFTConvolver1x1Process(FFTConvolver1x1 *conv, const float* input, float* output, unsigned int len);
+extern void FFTConvolver2x4x2Process(FFTConvolver2x4x2 *conv, const float* x1, const float* x2, float* y1, float* y2, unsigned int len);
+extern void FFTConvolver2x2Process(FFTConvolver2x2 *conv, const float* x1, const float* x2, float* y1, float* y2, unsigned int len);
+extern void FFTConvolver1x2Process(FFTConvolver1x2 *conv, const float* x, float* y1, float* y2, unsigned int len);
 
 /**
 * @brief Resets the convolver and discards the set impulse response
 */
-void FFTConvolver1x1Free(FFTConvolver1x1 *conv);
-void FFTConvolver2x4x2Free(FFTConvolver2x4x2 *conv);
-void FFTConvolver2x2Free(FFTConvolver2x2 *conv);
-void FFTConvolver1x2Free(FFTConvolver1x2 *conv);
-#endif // Header guard
+extern void FFTConvolver1x1Free(FFTConvolver1x1 *conv);
+extern void FFTConvolver2x4x2Free(FFTConvolver2x4x2 *conv);
+extern void FFTConvolver2x2Free(FFTConvolver2x2 *conv);
+extern void FFTConvolver1x2Free(FFTConvolver1x2 *conv);
+
+/**
+* @brief Refreshs the convolver without modify memory pointers
+* blockSize, irLen must be the same as the one in initialization
+*/
+extern int FFTConvolver1x1RefreshImpulseResponse(FFTConvolver1x1 *conv, unsigned int blockSize, const float* ir, unsigned int irLen);
+extern int FFTConvolver2x2RefreshImpulseResponse(FFTConvolver2x2 *conv, unsigned int blockSize, const float* irL, const float* irR, unsigned int irLen);
+#endif

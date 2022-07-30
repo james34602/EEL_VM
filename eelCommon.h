@@ -1,4 +1,4 @@
-#ifdef TURN_ON_VST
+#if defined(TURN_ON_VST)
 // Config a custom CLI buffer
 #define CUSTOM_CMD
 #endif

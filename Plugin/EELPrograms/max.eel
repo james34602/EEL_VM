@@ -1,0 +1,14 @@
+desc: max(L, R) using vectorized operation
+
+@init
+ary = 0;
+ary[0] = 0;
+ary[1] = 0;
+
+@sample
+ary[0] = spl0;
+ary[1] = spl1;
+mmax = maxVec(ary, 2);
+mmin = minVec(ary, 2);
+spl0 = mmax;
+spl1 = mmin;

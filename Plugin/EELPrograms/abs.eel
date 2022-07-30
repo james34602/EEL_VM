@@ -1,4 +1,4 @@
-desc: MS centre boost
+desc: abs(complex(L, R))
 
 @init
 function db2mag(db)

@@ -19,11 +19,38 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\cpthread.h" />
+    <ClInclude Include="..\dirent.h" />
+    <ClInclude Include="..\dr_flac.h" />
+    <ClInclude Include="..\dr_mp3.h" />
+    <ClInclude Include="..\dr_wav.h" />
+    <ClInclude Include="..\eelCommon.h" />
+    <ClInclude Include="..\eel_matrix.h" />
+    <ClInclude Include="..\fft.h" />
+    <ClInclude Include="..\glue_port.h" />
+    <ClInclude Include="..\ns-eel-int.h" />
+    <ClInclude Include="..\ns-eel.h" />
+    <ClInclude Include="..\numericSys\codelet.h" />
+    <ClInclude Include="..\numericSys\cpoly.h" />
+    <ClInclude Include="..\numericSys\FFTConvolver.h" />
+    <ClInclude Include="..\numericSys\FilterDesign\fdesign.h" />
+    <ClInclude Include="..\numericSys\FilterDesign\polyphaseASRC.h" />
+    <ClInclude Include="..\numericSys\FilterDesign\polyphaseFilterbank.h" />
+    <ClInclude Include="..\numericSys\libsamplerate\common.h" />
+    <ClInclude Include="..\numericSys\libsamplerate\samplerate.h" />
+    <ClInclude Include="..\numericSys\libsamplerate\src_config.h" />
+    <ClInclude Include="..\numericSys\quadprog.h" />
+    <ClInclude Include="..\numericSys\SolveLinearSystem\qr_fact.h" />
+    <ClInclude Include="..\numericSys\solvopt.h" />
+    <ClInclude Include="..\stb_sprintf.h" />
+    <ClInclude Include="..\s_str.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\cpthread.c" />
+    <ClCompile Include="..\fft.c" />
+    <ClCompile Include="..\loose_eel.c" />
     <ClCompile Include="..\nseel-compiler.c" />
     <ClCompile Include="..\nseel-ram.c" />
-    <ClCompile Include="..\loose_eel.c" />
-    <ClCompile Include="..\fft.c" />
     <ClCompile Include="..\numericSys\codelet.c" />
     <ClCompile Include="..\numericSys\cpoly.c" />
     <ClCompile Include="..\numericSys\FFTConvolver.c" />
@@ -31,6 +58,8 @@
     <ClCompile Include="..\numericSys\FilterDesign\eqnerror.c" />
     <ClCompile Include="..\numericSys\FilterDesign\firls.c" />
     <ClCompile Include="..\numericSys\FilterDesign\generalFdesign.c" />
+    <ClCompile Include="..\numericSys\FilterDesign\polyphaseASRC.c" />
+    <ClCompile Include="..\numericSys\FilterDesign\polyphaseFilterbank.c" />
     <ClCompile Include="..\numericSys\libsamplerate\samplerate.c" />
     <ClCompile Include="..\numericSys\libsamplerate\src_sinc.c" />
     <ClCompile Include="..\numericSys\MersenneTwister.c" />
@@ -43,30 +72,6 @@
     <ClCompile Include="..\numericSys\solvopt.c" />
     <ClCompile Include="..\s_str.c" />
     <ClCompile Include="..\y.tab.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\cpthread.h" />
-    <ClInclude Include="..\dirent.h" />
-    <ClInclude Include="..\dr_flac.h" />
-    <ClInclude Include="..\dr_mp3.h" />
-    <ClInclude Include="..\dr_wav.h" />
-    <ClInclude Include="..\eelCommon.h" />
-    <ClInclude Include="..\eel_matrix.h" />
-    <ClInclude Include="..\ns-eel-int.h" />
-    <ClInclude Include="..\ns-eel.h" />
-    <ClInclude Include="..\fft.h" />
-    <ClInclude Include="..\glue_port.h" />
-    <ClInclude Include="..\numericSys\codelet.h" />
-    <ClInclude Include="..\numericSys\FFTConvolver.h" />
-    <ClInclude Include="..\numericSys\FilterDesign\fdesign.h" />
-    <ClInclude Include="..\numericSys\libsamplerate\common.h" />
-    <ClInclude Include="..\numericSys\libsamplerate\samplerate.h" />
-    <ClInclude Include="..\numericSys\libsamplerate\src_config.h" />
-    <ClInclude Include="..\numericSys\polyphase.h" />
-    <ClInclude Include="..\numericSys\quadprog.h" />
-    <ClInclude Include="..\numericSys\SolveLinearSystem\qr_fact.h" />
-    <ClInclude Include="..\numericSys\solvopt.h" />
-    <ClInclude Include="..\s_str.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{893B9C0E-73CA-4843-A3BC-8A3FF9055FA8}</ProjectGuid>

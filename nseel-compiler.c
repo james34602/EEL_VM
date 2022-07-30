@@ -2584,7 +2584,7 @@ static float NSEEL_CGEN_CALL pinkNoiseGen(void *opaque, INT_PTR num_param, float
 	PinkNoise *noiseStruct = (PinkNoise*)indexer;
 	return GeneratePinkNoise(noiseStruct) * *parms[1];
 }
-#include "numericSys/polyphase.h"
+#include "numericSys/FilterDesign/polyphaseFilterbank.h"
 static float NSEEL_CGEN_CALL PolyphaseFilterbankInit(void *opaque, INT_PTR num_param, float **parms)
 {
 	if (num_param < 4)
@@ -2668,6 +2668,7 @@ static float NSEEL_CGEN_CALL PolyphaseFilterbankGetDecimationFactor(void *opaque
 		decF[i] = pfbPtr->Sk[i];
 	return 0;
 }
+#include "numericSys/FilterDesign/polyphaseFilterbank.h"
 static float NSEEL_CGEN_CALL PolyphaseFilterbankAnalysisMono(void *opaque, INT_PTR num_param, float **parms)
 {
 	if (num_param < 4)
@@ -2754,7 +2755,7 @@ static float NSEEL_CGEN_CALL _eel_iirBandSplitterInit(void *opaque, INT_PTR num_
 	if (num_param > 9)
 		return -1;
 	size_t requireMemSize;
-	void *ptr;
+	void *ptr = 0;
 	if (num_param == 3)
 	{
 		requireMemSize = sizeof(LinkwitzRileyCrossover);
@@ -2937,7 +2938,7 @@ static float NSEEL_CGEN_CALL _eel_initfftconv1d(void *opaque, INT_PTR num_param,
 		if (!counter)
 			break;
 	}
-	void *ptr;
+	void *ptr = 0;
 	uint32_t convType;
 	if (num_param == 3)
 		convType = 1;

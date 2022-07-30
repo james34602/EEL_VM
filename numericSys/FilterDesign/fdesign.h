@@ -79,4 +79,18 @@ extern int32_t firls(int32_t N, double *freq, double *M, double *weight, int32_t
 extern void subsamplingCal(unsigned int M, double alpha, double *f_def, unsigned int *Sk);
 extern float* allpass_char(double alpha, unsigned int L, unsigned int *CFiltLen);
 extern void cos_fib_paraunitary1(unsigned int N, unsigned int m, unsigned int L, double df, double *h_opt);
+#include "polyphaseASRC.h"
+#include "polyphaseFilterbank.h"
+#include <stdint.h>
+typedef struct
+{
+	uint32_t in, out;
+} RingBuffer;
+typedef struct
+{
+	unsigned int calculatedLatencyWholeSystem, ringBufSize;
+	SRCResampler polyphaseDecimator;
+	SRCResampler polyphaseInterpolator;
+	RingBuffer intermediateRing;
+} IntegerASRCHandler;
 #endif

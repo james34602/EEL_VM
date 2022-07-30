@@ -3,9 +3,8 @@
 #include <string.h>
 #include <float.h>
 #include <math.h>
+#include "../ns-eel.h"
 #include "codelet.h"
-extern void fhtbitReversalTbl(unsigned *dst, unsigned int n);
-extern void fhtsinHalfTblFloat(float *dst, unsigned int n);
 unsigned int upper_power_of_two(unsigned int v)
 {
 	v--;
@@ -375,13 +374,12 @@ void FFTConvolver1x2Free(FFTConvolver1x2 *conv)
 	conv->_current = 0;
 	conv->_inputBufferFill = 0;
 }
+extern void fhtbitReversalTbl(unsigned *dst, unsigned int n);
+extern void fhtsinHalfTblFloat(float *dst, unsigned int n);
 int FFTConvolver1x1LoadImpulseResponse(FFTConvolver1x1 *conv, unsigned int blockSize, const float* ir, unsigned int irLen)
 {
 	if (blockSize == 0)
 		return 0;
-	// Ignore zeros at the end of the impulse response because they only waste computation time
-	while (irLen > 0 && fabsf(ir[irLen - 1]) < FLT_EPSILON)
-		--irLen;
 	if (irLen == 0)
 		return 0;
 
@@ -495,13 +493,39 @@ int FFTConvolver1x1LoadImpulseResponse(FFTConvolver1x1 *conv, unsigned int block
 	conv->gain = 1.0f / ((float)conv->_segSize * 2.0f);
 	return 1;
 }
+int FFTConvolver1x1RefreshImpulseResponse(FFTConvolver1x1 *conv, unsigned int blockSize, const float* ir, unsigned int irLen)
+{
+	if (blockSize == 0)
+		return 0;
+	if (irLen == 0)
+		return 0;
+	// Prepare IR
+	for (unsigned int i = 0; i < conv->_segCount; ++i)
+	{
+		float* segmentRe = conv->_segmentsIRRe[i];
+		float* segmentIm = conv->_segmentsIRIm[i];
+		const unsigned int remaining = irLen - (i * conv->_blockSize);
+		const unsigned int sizeCopy = (remaining >= conv->_blockSize) ? conv->_blockSize : remaining;
+		for (unsigned int j = 0; j < sizeCopy; j++)
+			conv->_fftBuffer[conv->bit[j]] = ir[i*conv->_blockSize + j];
+		for (unsigned int j = sizeCopy; j < conv->_segSize; j++)
+			conv->_fftBuffer[conv->bit[j]] = 0.0f;
+		conv->fft(conv->_fftBuffer, conv->sine);
+		segmentRe[0] = conv->_fftBuffer[0] * 2.0f;
+		segmentIm[0] = 0.0f;
+		for (unsigned int j = 1; j < conv->_fftComplexSize; j++)
+		{
+			unsigned int symIdx = conv->_segSize - j;
+			segmentRe[j] = conv->_fftBuffer[j] + conv->_fftBuffer[symIdx];
+			segmentIm[j] = conv->_fftBuffer[j] - conv->_fftBuffer[symIdx];
+		}
+	}
+	return 1;
+}
 int FFTConvolver2x4x2LoadImpulseResponse(FFTConvolver2x4x2 *conv, unsigned int blockSize, const float* irLL, const float* irLR, const float* irRL, const float* irRR, unsigned int irLen)
 {
 	if (blockSize == 0)
 		return 0;
-	// Ignore zeros at the end of the impulse response because they only waste computation time
-	while (irLen > 0 && fabsf(irLL[irLen - 1] + irLR[irLen - 1] + irRL[irLen - 1] + irRR[irLen - 1]) < (FLT_EPSILON * 4.0f))
-		--irLen;
 	if (irLen == 0)
 		return 0;
 
@@ -702,9 +726,6 @@ int FFTConvolver2x2LoadImpulseResponse(FFTConvolver2x2 *conv, unsigned int block
 {
 	if (blockSize == 0)
 		return 0;
-	// Ignore zeros at the end of the impulse response because they only waste computation time
-	while (irLen > 0 && fabsf(irL[irLen - 1] + irR[irLen - 1]) < (FLT_EPSILON * 2.0f))
-		--irLen;
 	if (irLen == 0)
 		return 0;
 
@@ -857,13 +878,57 @@ int FFTConvolver2x2LoadImpulseResponse(FFTConvolver2x2 *conv, unsigned int block
 	conv->gain = 1.0f / ((float)conv->_segSize * 2.0f);
 	return 1;
 }
+int FFTConvolver2x2RefreshImpulseResponse(FFTConvolver2x2 *conv, unsigned int blockSize, const float* irL, const float* irR, unsigned int irLen)
+{
+	if (blockSize == 0)
+		return 0;
+	if (irLen == 0)
+		return 0;
+	for (unsigned int i = 0; i < conv->_segCount; ++i)
+	{
+		unsigned int j, symIdx;
+		float* segmentLLRe = conv->_segmentsLLIRRe[i];
+		float* segmentLLIm = conv->_segmentsLLIRIm[i];
+		unsigned int remaining = irLen - (i * conv->_blockSize);
+		unsigned int sizeCopy = (remaining >= conv->_blockSize) ? conv->_blockSize : remaining;
+		for (j = 0; j < sizeCopy; j++)
+			conv->_fftBuffer[0][conv->bit[j]] = irL[i*conv->_blockSize + j];
+		for (j = sizeCopy; j < conv->_segSize; j++)
+			conv->_fftBuffer[0][conv->bit[j]] = 0.0f;
+		conv->fft(conv->_fftBuffer[0], conv->sine);
+		segmentLLRe[0] = conv->_fftBuffer[0][0] * 2.0f;
+		segmentLLIm[0] = 0.0f;
+		for (j = 1; j < conv->_fftComplexSize; j++)
+		{
+			symIdx = conv->_segSize - j;
+			segmentLLRe[j] = conv->_fftBuffer[0][j] + conv->_fftBuffer[0][symIdx];
+			segmentLLIm[j] = conv->_fftBuffer[0][j] - conv->_fftBuffer[0][symIdx];
+		}
+		//
+		float* segmentRRRe = conv->_segmentsRRIRRe[i];
+		float* segmentRRIm = conv->_segmentsRRIRIm[i];
+		remaining = irLen - (i * conv->_blockSize);
+		sizeCopy = (remaining >= conv->_blockSize) ? conv->_blockSize : remaining;
+		for (j = 0; j < sizeCopy; j++)
+			conv->_fftBuffer[0][conv->bit[j]] = irR[i*conv->_blockSize + j];
+		for (j = sizeCopy; j < conv->_segSize; j++)
+			conv->_fftBuffer[0][conv->bit[j]] = 0.0f;
+		conv->fft(conv->_fftBuffer[0], conv->sine);
+		segmentRRRe[0] = conv->_fftBuffer[0][0] * 2.0f;
+		segmentRRIm[0] = 0.0f;
+		for (j = 1; j < conv->_fftComplexSize; j++)
+		{
+			symIdx = conv->_segSize - j;
+			segmentRRRe[j] = conv->_fftBuffer[0][j] + conv->_fftBuffer[0][symIdx];
+			segmentRRIm[j] = conv->_fftBuffer[0][j] - conv->_fftBuffer[0][symIdx];
+		}
+	}
+	return 1;
+}
 int FFTConvolver1x2LoadImpulseResponse(FFTConvolver1x2 *conv, unsigned int blockSize, const float* irL, const float* irR, unsigned int irLen)
 {
 	if (blockSize == 0)
 		return 0;
-	// Ignore zeros at the end of the impulse response because they only waste computation time
-	while (irLen > 0 && fabsf(irL[irLen - 1] + irR[irLen - 1]) < (FLT_EPSILON * 2.0f))
-		--irLen;
 	if (irLen == 0)
 		return 0;
 
@@ -1008,7 +1073,6 @@ int FFTConvolver1x2LoadImpulseResponse(FFTConvolver1x2 *conv, unsigned int block
 	conv->gain = 1.0f / ((float)conv->_segSize * 2.0f);
 	return 1;
 }
-
 void FFTConvolver1x1Process(FFTConvolver1x1 *conv, const float* input, float* output, unsigned int len)
 {
 	unsigned int j, symIdx;

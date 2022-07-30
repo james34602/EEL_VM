@@ -48,7 +48,7 @@ int rank(const double *mat, const int n, const int m)
 	free(row_selected);
 	return rank;
 }
-static void matrix_matrix_product(const double *a, const double *b, double *product, int rows1, int cols1, int rows2, int cols2, double weight)
+void matrix_matrix_product(const double *a, const double *b, double *product, int rows1, int cols1, int rows2, int cols2, double weight)
 {
 	int i, j, k;
 	for (i = 0; i < rows1; ++i)

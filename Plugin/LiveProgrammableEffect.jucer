@@ -54,7 +54,6 @@
     </GROUP>
     <GROUP id="{FDC7D40D-3BDD-00BA-E2B1-46DD35CB5E88}" name="EEL2">
       <GROUP id="{028F0C70-E6C2-B821-086B-D7C1FF5BE85B}" name="NumericSystem">
-        <FILE id="foCTlH" name="polyphase.h" compile="0" resource="0" file="../numericSys/polyphase.h"/>
         <GROUP id="{3D2C8887-4381-6B9A-7727-BE9C25B0BCAB}" name="libsamplerate">
           <FILE id="iFl0Ex" name="common.h" compile="0" resource="0" file="../numericSys/libsamplerate/common.h"/>
           <FILE id="ybuqE9" name="samplerate.c" compile="1" resource="0" file="../numericSys/libsamplerate/samplerate.c"/>
@@ -70,6 +69,12 @@
           <FILE id="A8u2vt" name="firls.c" compile="1" resource="0" file="../numericSys/FilterDesign/firls.c"/>
           <FILE id="pAHNLC" name="generalFdesign.c" compile="1" resource="0"
                 file="../numericSys/FilterDesign/generalFdesign.c"/>
+          <FILE id="Jy6udQ" name="polyphaseASRC.c" compile="1" resource="0" file="../numericSys/FilterDesign/polyphaseASRC.c"/>
+          <FILE id="b9s5py" name="polyphaseASRC.h" compile="0" resource="0" file="../numericSys/FilterDesign/polyphaseASRC.h"/>
+          <FILE id="GSp010" name="polyphaseFilterbank.c" compile="1" resource="0"
+                file="../numericSys/FilterDesign/polyphaseFilterbank.c"/>
+          <FILE id="CHdSze" name="polyphaseFilterbank.h" compile="0" resource="0"
+                file="../numericSys/FilterDesign/polyphaseFilterbank.h"/>
         </GROUP>
         <GROUP id="{A525E6C6-B7CA-1DE6-476E-14C5DC771E98}" name="SolveLinearSystem">
           <FILE id="ScpE8H" name="inv.c" compile="1" resource="0" file="../numericSys/SolveLinearSystem/inv.c"/>
