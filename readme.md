@@ -1,6 +1,5 @@
 EEL2 is a language that powers [REAPER](https://www.reaper.fm/)'s [JSFX](https://www.reaper.fm/sdk/js), LiveProgVST, and is also used by [JamesDSP](https://github.com/james34602/JamesDSPManager). This document is purely for the core EEL2 functionality.
 
-
 * Basic Language Attributes
 * Operator reference
 * Simple math functions
@@ -15,22 +14,28 @@ EEL2 is a language that powers [REAPER](https://www.reaper.fm/)'s [JSFX](https:/
 
 **Basic Language Attributes**
 
-
 The core of EEL2 has many similarities to C but is distictly different. Some notable qualities of this language are:
 
-  - Variables do not need to be declared, are by default global, and are all single-precision floating point.
-  - Parentheses "(" and ")" can be used to clarify precidence, contain parameters for functions, and collect multiple statements into a single statement.
-  - A semicolon ";" is used to separate statements from eachother (including within parentheses).
-  - A virtual local address space of about 8 million words (queryable at runtime via [__memtop()](#func---memtop)) can be accessed via brackets "[" and "]".
-  - [User definable functions](#function), which can define private variables, parameters, and also can optionally access namespaced instance variables. Recursion is NOT supported.
-  - Numbers are in normal decimal, however if you prefix a '$x' or '0x' to them, they will be hexadecimal (e.g. $x90, 0xDEADBEEF, etc).
-  - You may specify the ASCII value of a character using $'c' or 'c' (where c is the character). Multibyte characters are also supported using 'abc'.
-  - If you wish to generate a mask of 1 bits in integer, you can use $~X, for example $~7 is 127, $~8 is 255, $~16 is 65535, etc.
-  - Comments can be specified using:
+- Variables do not need to be declared, are by default global, and are all single-precision floating point.
 
-    + // comments to end of line
-    + /* comments block of code that span lines or be part of a line */
+- Parentheses "(" and ")" can be used to clarify precidence, contain parameters for functions, and collect multiple statements into a single statement.
 
+- A semicolon ";" is used to separate statements from eachother (including within parentheses).
+
+- A virtual local address space of about 8 million words (queryable at runtime via [__memtop()](#func---memtop)) can be accessed via brackets "[" and "]".
+
+- [User definable functions](#function), which can define private variables, parameters, and also can optionally access namespaced instance variables. Recursion is NOT supported.
+
+- Numbers are in normal decimal, however if you prefix a '$x' or '0x' to them, they will be hexadecimal (e.g. $x90, 0xDEADBEEF, etc).
+
+- You may specify the ASCII value of a character using $'c' or 'c' (where c is the character). Multibyte characters are also supported using 'abc'.
+
+- If you wish to generate a mask of 1 bits in integer, you can use $~X, for example $~7 is 127, $~8 is 255, $~16 is 65535, etc.
+
+- Comments can be specified using:
+  
+  + // comments to end of line
+  + /* comments block of code that span lines or be part of a line */
 
 ***
 
@@ -38,51 +43,63 @@ The core of EEL2 has many similarities to C but is distictly different. Some not
 
 Listed from highest precedence to lowest (but one should use parentheses whenever there is doubt!):
 
-  - **[ ]**
+- **[ ]**
 
 ```
 z=x[y];
 x[y]=z;
 ```
 
-  - **!value** -- returns the logical NOT of the parameter (if the parameter is 0.0, returns 1.0, otherwise returns 0.0).
-  - **-value** -- returns value with a reversed sign (-1 * value).
-  - **+value** -- returns value unmodified.
+- **!value** -- returns the logical NOT of the parameter (if the parameter is 0.0, returns 1.0, otherwise returns 0.0).
 
-  - **base ^ exponent** -- returns the first parameter raised to the power of the second parameter. This is also available the function pow(x,y)
+- **-value** -- returns value with a reversed sign (-1 * value).
 
-  - **numerator % denominator** -- divides two values as integers and returns the remainder.
+- **+value** -- returns value unmodified.
 
-  - **value << shift_amt** -- converts both values to 32 bit integers, bitwise left shifts the first value by the second. Note that shifts by more than 32 or less than 0 produce undefined results.
+- **base ^ exponent** -- returns the first parameter raised to the power of the second parameter. This is also available the function pow(x,y)
 
-  - **value >> shift_amt** -- converts both values to 32 bit integers, bitwise right shifts the first value by the second, with sign-extension (negative values of y produce non-positive results). Note that shifts by more than 32 or less than 0 produce undefined results.
+- **numerator % denominator** -- divides two values as integers and returns the remainder.
 
-  - **value / divisor** -- divides two values and returns the quotient.
+- **value << shift_amt** -- converts both values to 32 bit integers, bitwise left shifts the first value by the second. Note that shifts by more than 32 or less than 0 produce undefined results.
 
-  - **value * another_value** -- multiplies two values and returns the product.
+- **value >> shift_amt** -- converts both values to 32 bit integers, bitwise right shifts the first value by the second, with sign-extension (negative values of y produce non-positive results). Note that shifts by more than 32 or less than 0 produce undefined results.
 
-  - **value - another_value** -- subtracts two values and returns the difference.
+- **value / divisor** -- divides two values and returns the quotient.
 
-  - **value + another_value** -- adds two values and returns the sum.
+- **value * another_value** -- multiplies two values and returns the product.
 
-  - **a | b** -- converts both values to integer, and returns bitwise OR of values.
-  - **a & b** -- converts both values to integer, and returns bitwise AND of values.
-  - **a ~ b** -- converts both values to 32 bit integers, bitwise XOR the values.
+- **value - another_value** -- subtracts two values and returns the difference.
 
-  - **value1 == value2** -- compares two values, returns 1 if difference is less than 0.00001, 0 if not.
-  - **value1 === value2** -- compares two values, returns 1 if exactly equal, 0 if not.
-  - **value1 != value2** -- compares two values, returns 0 if difference is less than 0.00001, 1 if not.
-  - **value1 !== value2** -- compares two values, returns 0 if exactly equal, 1 if not.
-  - **value1 < value2** -- compares two values, returns 1 if first parameter is less than second.
-  - **value1 > value2** -- compares two values, returns 1 if first parameter is greater than second.
-  - **value1 <= value2** -- compares two values, returns 1 if first is less than or equal to second.
-  - **value1 >= value2** -- compares two values, returns 1 if first is greater than or equal to second.
+- **value + another_value** -- adds two values and returns the sum.
 
-  - **y || z** -- returns logical OR of values. If 'y' is nonzero, 'z' is not evaluated.
-  - **y && z** -- returns logical AND of values. If 'y' is zero, 'z' is not evaluated.
+- **a | b** -- converts both values to integer, and returns bitwise OR of values.
 
-  - **y ? z** _-- how conditional branching is done -- similar to C's if/else_
-**y ? z : x**
+- **a & b** -- converts both values to integer, and returns bitwise AND of values.
+
+- **a ~ b** -- converts both values to 32 bit integers, bitwise XOR the values.
+
+- **value1 == value2** -- compares two values, returns 1 if difference is less than 0.00001, 0 if not.
+
+- **value1 === value2** -- compares two values, returns 1 if exactly equal, 0 if not.
+
+- **value1 != value2** -- compares two values, returns 0 if difference is less than 0.00001, 1 if not.
+
+- **value1 !== value2** -- compares two values, returns 0 if exactly equal, 1 if not.
+
+- **value1 < value2** -- compares two values, returns 1 if first parameter is less than second.
+
+- **value1 > value2** -- compares two values, returns 1 if first parameter is greater than second.
+
+- **value1 <= value2** -- compares two values, returns 1 if first is less than or equal to second.
+
+- **value1 >= value2** -- compares two values, returns 1 if first is greater than or equal to second.
+
+- **y || z** -- returns logical OR of values. If 'y' is nonzero, 'z' is not evaluated.
+
+- **y && z** -- returns logical AND of values. If 'y' is zero, 'z' is not evaluated.
+
+- **y ? z** _-- how conditional branching is done -- similar to C's if/else_
+  **y ? z : x**
 
 If y is non-zero, executes and returns z, otherwise executes and returns x (or 0.0 if _': x'_ is not specified).
 
@@ -97,25 +114,27 @@ f = max(3,f);
 x = 0;
 );
 ```
-  - **y = z** -- assigns the value of 'z' to 'y'. 'z' can be a variable or an expression.
-  - **y \*= z** -- multiplies two values and stores the product back into 'y'.
-  - **y /= divisor** -- divides two values and stores the quotient back into 'y'.
-  - **y %= divisor** -- divides two values as integers and stores the remainder back into 'y'.
-  - **base ^= exponent** -- raises first parameter to the second parameter-th power, saves back to 'base'
-  - **y += z** -- adds two values and stores the sum back into 'y'.
-  - **y -= z** -- subtracts 'z' from 'y' and stores the difference into 'y'.
-  - **y |= z** -- converts both values to integer, and stores the bitwise OR into 'y'
-  - **y &= z** -- converts both values to integer, and stores the bitwise AND into 'y'
-  - **y ~= z** -- converts both values to integer, and stores the bitwise XOR into 'y'
+
+- **y = z** -- assigns the value of 'z' to 'y'. 'z' can be a variable or an expression.
+- **y \*= z** -- multiplies two values and stores the product back into 'y'.
+- **y /= divisor** -- divides two values and stores the quotient back into 'y'.
+- **y %= divisor** -- divides two values as integers and stores the remainder back into 'y'.
+- **base ^= exponent** -- raises first parameter to the second parameter-th power, saves back to 'base'
+- **y += z** -- adds two values and stores the sum back into 'y'.
+- **y -= z** -- subtracts 'z' from 'y' and stores the difference into 'y'.
+- **y |= z** -- converts both values to integer, and stores the bitwise OR into 'y'
+- **y &= z** -- converts both values to integer, and stores the bitwise AND into 'y'
+- **y ~= z** -- converts both values to integer, and stores the bitwise XOR into 'y'
 
 Some key notes about the above, especially for C programmers:
 
-  - ( and ) (vs { } ) -- enclose multiple statements, and the value of that expression is the last statement within the block:
+- ( and ) (vs { } ) -- enclose multiple statements, and the value of that expression is the last statement within the block:
 
 ```
 z = (a = 5; b = 3; a+b;); // z will be set to 8, for example
 ```
-  - Conditional branching is done using the ? or ? : operator, rather than if()/else.
+
+- Conditional branching is done using the ? or ? : operator, rather than if()/else.
 
 ```
 a < 5 ? b = 6; // if a is less than 5, set b to 6
@@ -124,7 +143,8 @@ a < 5 ? ( // if a is less than 5, set b to 6 and c to 7
 b = 6;
 c = 7; );
 ```
-  - The ? and ?: operators can also be used as the lvalue of expressions:
+
+- The ? and ?: operators can also be used as the lvalue of expressions:
 
 ```
 (a < 5 ? b : c) = 8; // if a is less than 5, set b to 8, otherwise set c to 8
@@ -134,33 +154,33 @@ c = 7; );
 
 **Simple math functions**
 
-  - **sin(angle)** -- returns the Sine of the angle specified (specified in radians -- to convert from degrees to radians, multiply by $pi/180, or 0.017453)
-  - **cos(angle)** -- returns the Cosine of the angle specified (specified in radians).
-  - **tan(angle)** -- returns the Tangent of the angle specified (specified in radians).
-  - **asin(x)** -- returns the Arc Sine of the value specified (return value is in radians).
-  - **acos(x)** -- returns the Arc Cosine of the value specified (return value is in radians).
-  - **atan(x)** -- returns the Arc Tangent of the value specified (return value is in radians).
-  - **atan2(x,y)** -- returns the Arc Tangent of x divided by y (return value is in radians).
-  - **hypot(x,y)** -- returns the hypotenuse of a right-angled triangle whose legs are x and y.
-  - **hypotFast(x,y)** -- returns the hypotenuse of a right-angled triangle whose legs are x and y using sqrt(x * x + y * y).
-  - **sqr(x)** -- returns the square of the parameter (similar to x*x, though only evaluating x once).
-  - **sqrt(x)** -- returns the square root of the parameter.
-  - **pow(x,y)** -- returns the first parameter raised to the second parameter-th power. Identical in behaviour and performance to the ^ operator.
-  - **exp(x)** -- returns the number e (approx 2.718) raised to the parameter-th power. This function is significantly faster than pow() or the ^ operator
-  - **log(x)** -- returns the natural logarithm (base e) of the parameter.
-  - **log10(x)** -- returns the logarithm (base 10) of the parameter.
-  - **abs(x)** -- returns the absolute value of the parameter.
-  - **min(x,y)** -- returns the minimum value of the two parameters.
-  - **max(x,y)** -- returns the maximum value of the two parameters.
-  - **sign(x)** -- returns the sign of the parameter (-1, 0, or 1).
-  - **rand(x)** -- returns a psuedorandom number between 0 and the parameter.
-  - **round(x)** -- rounds the value to the nearest integer (round(-5.6) == 3, round(2.1) == 2).
-  - **floor(x)** -- rounds the value to the lowest integer possible (floor(3.9) == 3, floor(-3.1) == -4).
-  - **ceil(x)** -- rounds the value to the highest integer possible (ceil(3.1) == 4, ceil(-3.9) == -3).
-  - **expint(x)** -- returns the exponential integral of the parameter.
-  - **expintFast(x)** -- returns exponential integral approximation of the parameter using lookup table.
-  - **invsqrt(x)** -- returns inverse square root (1/sqrt(x)) of the parameter.
-  - **invsqrtFast(x)** -- returns a fast inverse square root (1/sqrt(x)) approximation of the parameter.
+- **sin(angle)** -- returns the Sine of the angle specified (specified in radians -- to convert from degrees to radians, multiply by $pi/180, or 0.017453)
+- **cos(angle)** -- returns the Cosine of the angle specified (specified in radians).
+- **tan(angle)** -- returns the Tangent of the angle specified (specified in radians).
+- **asin(x)** -- returns the Arc Sine of the value specified (return value is in radians).
+- **acos(x)** -- returns the Arc Cosine of the value specified (return value is in radians).
+- **atan(x)** -- returns the Arc Tangent of the value specified (return value is in radians).
+- **atan2(x,y)** -- returns the Arc Tangent of x divided by y (return value is in radians).
+- **hypot(x,y)** -- returns the hypotenuse of a right-angled triangle whose legs are x and y.
+- **hypotFast(x,y)** -- returns the hypotenuse of a right-angled triangle whose legs are x and y using sqrt(x * x + y * y).
+- **sqr(x)** -- returns the square of the parameter (similar to x*x, though only evaluating x once).
+- **sqrt(x)** -- returns the square root of the parameter.
+- **pow(x,y)** -- returns the first parameter raised to the second parameter-th power. Identical in behaviour and performance to the ^ operator.
+- **exp(x)** -- returns the number e (approx 2.718) raised to the parameter-th power. This function is significantly faster than pow() or the ^ operator
+- **log(x)** -- returns the natural logarithm (base e) of the parameter.
+- **log10(x)** -- returns the logarithm (base 10) of the parameter.
+- **abs(x)** -- returns the absolute value of the parameter.
+- **min(x,y)** -- returns the minimum value of the two parameters.
+- **max(x,y)** -- returns the maximum value of the two parameters.
+- **sign(x)** -- returns the sign of the parameter (-1, 0, or 1).
+- **rand(x)** -- returns a psuedorandom number between 0 and the parameter.
+- **round(x)** -- rounds the value to the nearest integer (round(-5.6) == 3, round(2.1) == 2).
+- **floor(x)** -- rounds the value to the lowest integer possible (floor(3.9) == 3, floor(-3.1) == -4).
+- **ceil(x)** -- rounds the value to the highest integer possible (ceil(3.1) == 4, ceil(-3.9) == -3).
+- **expint(x)** -- returns the exponential integral of the parameter.
+- **expintFast(x)** -- returns exponential integral approximation of the parameter using lookup table.
+- **invsqrt(x)** -- returns inverse square root (1/sqrt(x)) of the parameter.
+- **invsqrtFast(x)** -- returns a fast inverse square root (1/sqrt(x)) approximation of the parameter.
 
 ***
 
@@ -168,7 +188,7 @@ c = 7; );
 
 Looping is supported in EEL2 via the following functions:
 
-  - **loop(count,code)**
+- **loop(count,code)**
 
 ```
 loop(32,
@@ -182,7 +202,7 @@ Implementations may choose to limit the number of iterations a loop is permitted
 
 The first parameter is only evaluated once (so modifying it within the code will have no effect on the number of loops). For a loop of indeterminate length, see [while()](#while) below.
 
-  - **while(code)**
+- **while(code)**
 
 ```
 while(
@@ -196,7 +216,7 @@ Evaluates the first parameter until the last statement in the code block evaluat
 
 Implementations may choose to limit the number of iterations a loop is permitted to execute (usually such limits are in the millions and should rarely be encountered).
 
-  - **while(condition) ( code )**
+- **while(condition) ( code )**
 
 ```
 while ( a < 1000 ) (
@@ -301,14 +321,14 @@ a.b.set_par_foo(1); // sets  a.foo to 1
 
 _Compute STFT on equispace sampled signal, following function's state variables occupy virtual local address space_
 
-  - **stftCheckMemoryRequirement(start_index_idx, fft_length, overlap, wndPow)**
-Return memory requirement from given spectral transform parameters.
-  - **stftInit(start_index_idx, start_indexTransform)**
-Return latency of the STFT, the latency value provide the hint that how big the input frame is.
-  - **stftForward(start_index_buffer, start_index_idx, start_indexTransform, retPolarCart)**
-Perform forward STFT on a framed signal at the offset specified by the first parameter(**start_index_buffer**), function accept return either Polar grid or Cartesian grid.
-  - **stftBackward(start_index_buffer, start_index_idx, start_indexTransform, retPolarCart)**
-Perform inverse STFT on the spectrum at the offset specified by the first parameter( )**start_index_buffer**), **retPolarCart** must be the same as the one used at **stftForward()**.
+- **stftCheckMemoryRequirement(start_index_idx, fft_length, overlap, wndPow)**
+  Return memory requirement from given spectral transform parameters.
+- **stftInit(start_index_idx, start_indexTransform)**
+  Return latency of the STFT, the latency value provide the hint that how big the input frame is.
+- **stftForward(start_index_buffer, start_index_idx, start_indexTransform, retPolarCart)**
+  Perform forward STFT on a framed signal at the offset specified by the first parameter(**start_index_buffer**), function accept return either Polar grid or Cartesian grid.
+- **stftBackward(start_index_buffer, start_index_idx, start_indexTransform, retPolarCart)**
+  Perform inverse STFT on the spectrum at the offset specified by the first parameter( )**start_index_buffer**), **retPolarCart** must be the same as the one used at **stftForward()**.
 
 Example:
 
@@ -333,9 +353,9 @@ The STFT provided also provide windowing, so your code is not required to window
 **Fast Fourier transform**
 
 - **fft(start_index, size), ifft(start_index, size)**
-**fft_real(start_index, size), ifft_real(start_index, size)**
-**fft_permute(start_index, size), fft_ipermute(start_index, size)**
-Example:
+  **fft_real(start_index, size), ifft_real(start_index, size)**
+  **fft_permute(start_index, size), fft_ipermute(start_index, size)**
+  Example:
 
 ```
 buffer=0;
@@ -355,23 +375,23 @@ Note that the FFT/IFFT must NOT cross a 65,536 item boundary, so be sure to spec
 
 The fft_real()/ifft_real() variants operate on a set of size real inputs, and produce size/2 complex outputs. The first output pair is DC,nyquist. Normally this is used with fft_permute(buffer,size/2).
 
-  - **convolve_c(dest,src,size)**
-Used to convolve two buffers, typically after FFTing them. convolve_c works with complex numbers. The sizes specify number of items (the number of complex number pairs).
+- **convolve_c(dest,src,size)**
+  Used to convolve two buffers, typically after FFTing them. convolve_c works with complex numbers. The sizes specify number of items (the number of complex number pairs).
 
 Note that the convolution must NOT cross a 65,536 item boundary, so be sure to specify the offset accordingly.
 
 **Fractional delay line**
 
-_Delay input signal by arbitrary amount, following function's state variables occupy virtual local address space_
+_Delay input signal by arbitrary amount_
 
-  - **fractionalDelayLineInit(start_index, maxDelay)**
-Return memory requirement from given max delay parameters.
-  - **fractionalDelayLineSetDelay(start_index, delaySmps)**
-Set fractional delay in samples.
-  - **fractionalDelayLineClear(start_index)**
-Clear all internal delay.
-  - **fractionalDelayLineProcess(start_index, xn)**
-Save **xn** sample value into internal buffer, and return delayed value
+- **fractionalDelayLineInit(start_index, maxDelay)**
+  Return memory requirement from given max delay parameters.
+- **fractionalDelayLineSetDelay(start_index, delaySmps)**
+  Set fractional delay in samples.
+- **fractionalDelayLineClear(start_index)**
+  Clear all internal delay.
+- **fractionalDelayLineProcess(start_index, xn)**
+  Save **xn** sample value into internal buffer, and return delayed value
 
 Example:
 
@@ -389,12 +409,12 @@ The fractional delay can be change anytime during processing. See the example co
 
 **Direct form FIR Filter**
 
-_Perform FIR filtering on purely time domain, following function's state variables occupy virtual local address space_
+_Perform FIR filtering on purely time domain_
 
-  - **FIRInit(start_index, hLen)**
-Return memory requirement for the FIR filter from given impulse response length.
-  - **FIRProcess(start_index, xn, coefficients)**
-Perform FIR filtering on **xn** using provided coefficients.
+- **FIRInit(start_index, hLen)**
+  Return memory requirement for the FIR filter from given impulse response length.
+- **FIRProcess(start_index, xn, coefficients)**
+  Perform FIR filtering on **xn** using provided coefficients.
 
 Example:
 
@@ -408,23 +428,88 @@ req = FIRInit(ptr1, hLen);
 output = FIRProcess(ptr1, input, coefficients);
 ```
 
+**Real time FFT convolution**
+
+*Perform FIR filtering on frequency domain with non-uniform partitioned convolution algorithm*
+
+- **Conv1DInit(buffer_len, hLen, h1, h2, h3, h4)**
+  
+  Initialization of FFT convolver.
+  
+  User can specify one or two or four impulse responses, if user specify one, the function assume there is only one input, if specify two, the function assume the input is two channel, if specify four, the function assume the input is two channel and a cross-channel summation will be perform after convolving each input with two impulse responses
+  
+  Specify the buffer length with buffer_len for buffer that stored for FFT convolver to read and write, user will have to allocate a buffer with buffer_len during processing
+  
+  hLen is impulse response length
+  
+  Memory of FFT convolver are being stored with limited slot, user can allocate 1024 FFT convolvers
+  Return slot ID
+
+- **Conv1DProcess(start_index, x1, x2)**
+  Perform FIR filtering using FFT convolution.
+  
+  If user specify one impulse response during initialization, then only one input needs to be supplied.
+  
+  If user specify two or four impulse responses during initialization, then two input needs to be supplied.
+
+- **Conv1DFree(slot_id)**
+  Free up occupied memory
+  
+  The specify slot_id must match the one return by previous initialization
+
+Example:
+
+```
+// Initialization
+requiredSamples = 1024;
+h1 = 0;
+impulseResponseLength = importFLTFromStr("IMPULSE1", h1);
+h2 = h1 + impulseResponseLength;
+impulseResponseLength = importFLTFromStr("IMPULSE2", h2);
+h3 = h2 + impulseResponseLength;
+impulseResponseLength = importFLTFromStr("IMPULSE3", h3);
+h4 = h3 + impulseResponseLength;
+impulseResponseLength = importFLTFromStr("IMPULSE4", h4);
+convId = Conv1DInit(requiredSamples, impulseResponseLength, h1, h2, h3, h4);
+inBufLeft = h4 + impulseResponseLength;
+outBufLeft = inBufLeft + requiredSamples;
+inBufRight = outBufLeft + requiredSamples;
+outBufRight = inBufRight + requiredSamples;
+// Processing
+inBufLeft[bufpos] = spl0;
+spl0 = outBufLeft[bufpos];
+inBufRight[bufpos] = spl1;
+spl1 = outBufRight[bufpos];
+bufpos += 1;
+bufpos >= requiredSamples ?
+(
+  Conv1DProcess(convId, inBufLeft, inBufRight);
+  idx = 0;
+  loop(requiredSamples,
+  outBufLeft[idx] = inBufLeft[idx];
+  outBufRight[idx] = inBufRight[idx];
+  idx+=1);
+  bufpos = 0;
+);
+```
+
 **Butterworth subband transform**
 
-_Decompose signal to N channels time domain subbands, following function's state variables occupy virtual local address space_
+_Decompose signal to N channels time domain subbands_
 
-  - **IIRBandSplitterInit(start_index, fs, band1, band2, ...)**
-Algorithm support [1...7] bands decomposition, user pass are allowed passing maximum 7 frequency cut-off to function arguments, return memory requirement for the internal band splitting filters.
-  - **IIRBandSplitterClearState(start_index)**
-Reset the band splitting filters states.
-  - **IIRBandSplitterProcess(start_index, xn, band1, band2, ...)**
-Perform band splitting on xn, algorithm support [1...7] bands decomposition, user pass are allowed passing maximum 8 variable for transformed value returning.
+- **IIRBandSplitterInit(start_index, fs, band1, band2, ...)**
+  Algorithm support [1...7] bands decomposition, user pass are allowed passing maximum 7 frequency cut-off to function arguments, return memory requirement for the internal band splitting filters.
+- **IIRBandSplitterClearState(start_index)**
+  Reset the band splitting filters states.
+- **IIRBandSplitterProcess(start_index, xn, band1, band2, ...)**
+  Perform band splitting on xn, algorithm support [1...7] bands decomposition, user pass are allowed passing maximum 8 variable for transformed value returning.
 
 Example:
 
 ```
 iirBPS = 0;
 // Initialize 3 bands
-reqSize = IIRBandSplitterInit(iirBPS, 48000, 4000, 12000); // Specify 2 cut-off frequency
+reqSize = IIRBandSplitterInit(iirBPS, 48000, 4000, 12000); // Specify 2 cut-off frequencies
 kDelta = iirBPS + reqSize;
 kDelta[0] = 1; // Kronecker delta
 sigLen = 1024;
@@ -439,25 +524,224 @@ IIRBandSplitterProcess(iirBPS, kDelta[idx], low, mid, high);
 IIRBandSplitterClearState(iirBPS);
 ```
 
+**Constant-Q polyphase filterbank**
+
+_Decompose signal to N channels decimated time domain subbands with logarithmic centre frequencies_
+
+- **InitPolyphaseFilterbank(fs, N, m, start_index1, start_index2)**
+  
+  Initialization of polyphase filterbank
+  User supply fs as sample rate, N as channels, m as number of polyphase components, function return memory requirement of all the internals buffer.
+
+- **PolyphaseFilterbankChangeWarpingFactor(start_index, sample_rate, warpingFactor)**
+  Change dispersive delay line warping factor
+  
+  start_index is filterbank memory block, sample_rate is sample rate of signal user like to break down into subbands, warpingFactor is dispersive delay line warping factor, range is [-1, 1]
+
+- **PolyphaseFilterbankGetPhaseCorrector(start_index1, percentage, start_index2)**
+  
+  Function to obtain impulse response that correct dispersive delay line
+  start_index1 is filterbank memory block, percentage corresponding to how much the nonlinear phase user require to correct, start_index2 is memory area for phase correction impulse response.
+
+- **PolyphaseFilterbankGetDecimationFactor(start_index1, start_index2)**
+  
+  Nonuniform polyphase subbands has nonuniform sampling periods, obtaining sampling periods is required to perform accurate analysis of signal and re-synthesis
+  
+  start_index1 is filterbank memory block, where start_index2 is decimation factor.
+
+- **PolyphaseFilterbankAnalysisMono(start_index1, start_index2, start_index3, x1)**
+  
+  Function to perform analysis of a signal
+  
+  start_index1 is filterbank memory block, start_index2 is filterbank output of x1, start_index3 is current indices of decimation, x1 is input sample
+
+- **PolyphaseFilterbankAnalysisStereo(start_index1, start_index2, start_index3, start_index4, start_index5, x1, x2)**
+  
+  Function to perform analysis of two input signals
+  
+  start_index1 is filterbank memory block 1, start_index2 is filterbank memory block2, start_index3 is filterbank output of x1, start_index4 is filterbank output of x2, start_index5 is current indices of decimation, x1 and x2 are input sample
+
+- **PolyphaseFilterbankSynthesisMono(start_index1, start_index2, y1)**
+  
+  Function to perform synthesis of subbands of a signal
+  
+  start_index1 is filterbank memory block 1, start_index2 is filterbank output of x1, y1 is synthesis output of filterbank
+
+- **PolyphaseFilterbankSynthesisStereo(start_index1, start_index2, start_index3, start_index4, y1, y2)**
+  
+  Function to perform synthesis of subbands of two input signal
+  
+  start_index1 is filterbank memory block 1, start_index2 is filterbank memory block2, start_index3 is filterbank output of x1, start_index4 is filterbank output of x2, y1 and y2 are synthesis output of filterbank
+
+Example:
+
+```
+// Initialization
+N = 8;
+m = 3;
+pfb1 = 0;
+memSize = InitPolyphaseFilterbank(srate, N, m, pfb1, pfb2);
+PolyphaseFilterbankChangeWarpingFactor(pfb1, srate, 0.99);
+phaseCorrFilt = pfb2 + memSize;
+corrFiltLen = PolyphaseFilterbankGetPhaseCorrector(pfb1, 0.5, phaseCorrFilt);
+i = 0;
+loop(corrFiltLen, 
+//printf("%1.7f,", phaseCorrFilt[i]);
+i += 1);
+Sk = phaseCorrFilt + corrFiltLen;
+PolyphaseFilterbankGetDecimationFactor(pfb1, Sk);
+subbandOutputLeft = Sk + N;
+subbandOutputRight = subbandOutputLeft + N;
+decimationCnt = subbandOutputRight + N;
+eqGain = decimationCnt + N;
+eqGain[0] = 1;
+eqGain[1] = 0;
+eqGain[2] = 1;
+eqGain[3] = 0;
+eqGain[4] = 1;
+eqGain[5] = 0;
+eqGain[6] = 1;
+
+// Processing
+PolyphaseFilterbankAnalysisStereo(pfb1, pfb2, subbandOutputLeft, subbandOutputRight, decimationCnt, spl0, spl1);
+// Modify subbands
+i = 0;
+loop(N, 
+decimationCnt[i] == Sk[i] ? (
+subbandOutputLeft[i] = subbandOutputLeft[i] * eqGain[i];
+subbandOutputRight[i] = subbandOutputRight[i] * eqGain[i];
+);
+i += 1);
+PolyphaseFilterbankSynthesisStereo(pfb1, pfb2, subbandOutputLeft, subbandOutputRight, y1, y2);
+spl0 = y1;
+spl1 = y2;
+
+// Reset states
+PolyphaseFilterbankClearState(iirBPS);
+```
+
 The subband transform supposed work on time series. See the example codes for more information.
 
+**Autoregressive model**
+
+_Decompose signal to N channels time domain subbands, following function's state variables occupy virtual local address space_
+
+- **arburgCheckMemoryRequirement(model_order, require_predictionState)**
+  Check memory requirement for autoregressive calculation
+  
+  model_order is autoregressive model order, require_predictionState is boolean option that specific user require to get forward and backward state
+
+- **arburgTrainModel(start_index1, model_order, require_predictionState, start_index2, input_len)**
+  
+  Fitting Burg model with input
+  
+  start_index1 is memory block for ARBurg, model_order is autoregressive model order, require_predictionState is boolean option that specific user require to get forward and backward state, start_index2 is input signal vector, input_len is signal length
+
+- **arburgGetPredictionReflectionCoeff(start_index1, start_index2, start_index3)**
+  
+  Obtain model coefficient from ARBurg memory
+  start_index1 is memory block for ARBurg, start_index2 is vector of prediction coefficients, start_index3 is vector of reflection coefficients.
+
+- arburgPredictForward(start_index)
+  
+  Perform forward prediction of signal just being fitted
+  
+  start_index is memory block for ARBurg
+
+- arburgPredictBackward(start_index)
+  
+  Perform backward predictionof signal just being fitted
+  
+  start_index is memory block for ARBurg
+
+Example:
+
+```
+r_ = 0;
+// Define time domain signal r_
+inLen = importFLTFromStr("ARRAY OF SAMPLE", r_);
+order = 31;
+getPredictionState = 1;
+memReq = arburgCheckMemoryRequirement(order, getPredictionState);
+burg = r_ + inLen;
+predictionCoefficients = burg + memReq;
+reflectionCoefficient = predictionCoefficients + (order + 1);
+arburgTrainModel(burg, order, getPredictionState, r_, inLen);
+arburgGetPredictionReflectionCoeff(burg, predictionCoefficients, reflectionCoefficient);
+printf("predictionCoefficients: ");
+idx = 0;
+loop((order + 1),
+printf("%1.8f, ", predictionCoefficients[idx]);
+idx += 1;
+);
+printf("\nreflectionCoefficient: \n");
+idx = 0;
+loop((order + 1),
+printf("%1.8f, ", reflectionCoefficient[idx]);
+idx += 1;
+);
+printf("\nBackward regression: \n");
+idx = 0;
+loop(1000,
+printf("%1.8f, ", arburgPredictBackward(burg));
+idx += 1;
+);
+printf("\nForward regression: \n");
+idx = 0;
+loop(1000,
+printf("%1.8f, ", arburgPredictForward(burg));
+idx += 1;
+);
+```
+
+** Miscellaneous
+
+- unwrap
+
+- cplxpair
+
+- zp2sos
+
+- tf2sos
+
+- roots
+
+- eqnerror
+
+- firls
+
 ** Linear algebra
-  - **det(start_index, m, n)** -- Compute the determinant of the input matrix **start_index**, m and n must be identical, otherwise return -1
-  - **rank(start_index, m, n)** -- returns the rank of the input matrix **start_index**.
-  - **transpose(start_indexIn, start_indexOut, m, n)** -- Out-of-place transpose of input matrix **start_indexIn**.
-  - **inv(start_indexIn, m, n, start_indexOut)** -- Compute matrix inversion of input matrix **start_indexIn**, m and n must be identical, otherwise return -1
-  - **pinv(start_indexIn, m, n, start_indexOut, start_indexMatSize)** -- Compute Moore–Penrose inverse of input matrix **start_indexIn**
-  - **mldivide(A, m1, n1, B, m, n, Out, MatSize)** -- Solve linear system or solves the system of linear equations Ax = B for x
-  - **mrdivide(A, m1, n1, B, m, n, Out, MatSize)** -- Solve linear system or solves the system of linear equations xA = B for x
+
+- **det(start_index, m, n)** -- Compute the determinant of the input matrix **start_index**, m and n must be identical, otherwise return -1
+
+- **rank(start_index, m, n)** -- returns the rank of the input matrix **start_index**.
+
+- **transpose(start_indexIn, start_indexOut, m, n)** -- Out-of-place transpose of input matrix **start_indexIn**.
+
+- **inv(start_indexIn, m, n, start_indexOut)** -- Compute matrix inversion of input matrix **start_indexIn**, m and n must be identical, otherwise return -1
+
+- **pinv(start_indexIn, m, n, start_indexOut, start_indexMatSize)** -- Compute Moore–Penrose inverse of input matrix **start_indexIn**
+
+- **mldivide(A, m1, n1, B, m, n, Out, MatSize)** -- Solve linear system or solves the system of linear equations Ax = B for x
+
+- **mrdivide(A, m1, n1, B, m, n, Out, MatSize)** -- Solve linear system or solves the system of linear equations xA = B for x
+
+- cholesky
+
+- inv_chol
+
+- pinv_svd
+
+- pinv_fast
 
 ** Optimization
 
-Ordinary least squares(OLS) is kind of optimization, the built-in routines are included in Linear algebra section.
+Following are constrained optimization, altough ordinary least squares(OLS) is a type of optimization, the built-in routines are included in Linear algebra section.
 The actual usage is somehow similar to the Matlab counterparts.
 
-  - **linprog(f, a, b, problemLen, constraintLen, solution)** -- Solves min f'*x such that A*x ≤ b, we don't support equalities input, user need to convert linear equalities to inequalities and deal with input arguments manually, routine will return objective function value at the solution, the **fval** to stack.
-  - **lsqlin(C, d, A, b, problemLen, constraintLen, solution)** -- Solves the linear system C*x = d in the least-squares sense, subject to A*x ≤ b. Routine will return objective function value at the solution, the **fval** to stack.
-  - **quadprog(H, f, A, b, problemLen, constraintLen, solution)** -- minimizes 1/2*x'*H*x + f'*x subject to the restrictions A*x ≤ b. We don't support equalities input, user need to convert linear equalities to inequalities and deal with input arguments manually, routine will return objective function value at the solution, the **fval** to stack.
+- **linprog(f, a, b, problemLen, constraintLen, solution)** -- Solves min f'*x such that A*x ≤ b, we don't support equalities input, user need to convert linear equalities to inequalities and deal with input arguments manually, routine will return objective function value at the solution, the **fval** to stack.
+- **lsqlin(C, d, A, b, problemLen, constraintLen, solution)** -- Solves the linear system C*x = d in the least-squares sense, subject to A*x ≤ b. Routine will return objective function value at the solution, the **fval** to stack.
+- **quadprog(H, f, A, b, problemLen, constraintLen, solution)** -- minimizes 1/2*x'*H*x + f'*x subject to the restrictions A*x ≤ b. We don't support equalities input, user need to convert linear equalities to inequalities and deal with input arguments manually, routine will return objective function value at the solution, the **fval** to stack.
 
 The function description is not intuitive, for actual use, please check out the examples.
 **Important**
@@ -479,29 +763,37 @@ printf("Val = %f", 3.4488);
 
 **String functions**
 
-  - **resetStringContainers()** -- remove all string from VM in case of dangling string bother you
-  - **importFLTFromStr(str, start_index)** -- import string characters to double precision floating pointer array
-  - **strlen(str)** -- returns length of string
-  - **strcmp(str, str2)** -- compares str to str2, case sensitive, returns -1, 0, or 1
-  - **stricmp(str, str2)** -- compares str to str2, ignoring case, returns -1, 0, or 1
-  - **strncmp(str, str2, maxlen)** -- compares str to str2 up to maxlen bytes, case sensitive, returns -1, 0, or 1
-  - **strnicmp(str, str2, maxlen)** -- compares str to str2 up to maxlen bytes, ignoring case, returns -1, 0, or 1
-  - **printf(str, format, ...)** -- print formated str to CLI, converting format strings:
-  - **sprintf(str, format, ...)** -- copies format to str, converting format strings:
+- **resetStringContainers()** -- remove all string from VM in case of dangling string bother you
 
-    + %% = %
-    + %s = string from parameter
-    + %d = parameter as integer
-    + %i = parameter as integer
-    + %u = parameter as unsigned integer
-    + %x = parameter as hex (lowercase) integer
-    + %X = parameter as hex (uppercase) integer
-    + %c = parameter as character
-    + %f = parameter as floating point
-    + %e = parameter as floating point (scientific notation, lowercase)
-    + %E = parameter as floating point (scientific notation, uppercase)
-    + %g = parameter as floating point (shortest representation, lowercase)
-    + %G = parameter as floating point (shortest representation, uppercase)
+- **importFLTFromStr(str, start_index)** -- import string characters to double precision floating pointer array
+
+- **strlen(str)** -- returns length of string
+
+- **strcmp(str, str2)** -- compares str to str2, case sensitive, returns -1, 0, or 1
+
+- **stricmp(str, str2)** -- compares str to str2, ignoring case, returns -1, 0, or 1
+
+- **strncmp(str, str2, maxlen)** -- compares str to str2 up to maxlen bytes, case sensitive, returns -1, 0, or 1
+
+- **strnicmp(str, str2, maxlen)** -- compares str to str2 up to maxlen bytes, ignoring case, returns -1, 0, or 1
+
+- **printf(str, format, ...)** -- print formated str to CLI, converting format strings:
+
+- **sprintf(str, format, ...)** -- copies format to str, converting format strings:
+  
+  + %% = %
+  + %s = string from parameter
+  + %d = parameter as integer
+  + %i = parameter as integer
+  + %u = parameter as unsigned integer
+  + %x = parameter as hex (lowercase) integer
+  + %X = parameter as hex (uppercase) integer
+  + %c = parameter as character
+  + %f = parameter as floating point
+  + %e = parameter as floating point (scientific notation, lowercase)
+  + %E = parameter as floating point (scientific notation, uppercase)
+  + %g = parameter as floating point (shortest representation, lowercase)
+  + %G = parameter as floating point (shortest representation, uppercase)
 
 Many standard [C printf()](http://www.cplusplus.com/reference/cstdio/printf/) modifiers can be used, including:
 
@@ -514,8 +806,9 @@ Many standard [C printf()](http://www.cplusplus.com/reference/cstdio/printf/) mo
     + %010f = integer, minimum of 10 digits (zero padded)
 
 The **printf** will print the value to **stdout** if the Host application is a CLI application, the string will be printed to logcat if the Host application have no GUI and not necessary limit to CLI application, however, if Host application have a GUI, for example, a executable or VST plugin, author had implement a string circular buffer to simulate the way CLI behave.
-  - **match(needle, haystack, ...)** -- search for needle in haystack
-**matchi(needle, haystack, ...)** -- search for needle in haystack (case insensitive)
+
+- **match(needle, haystack, ...)** -- search for needle in haystack
+  **matchi(needle, haystack, ...)** -- search for needle in haystack (case insensitive)
 
 For these you can use simplified regex-style wildcards:
 
@@ -547,38 +840,38 @@ The variables can be specified as additional parameters to match(), or directly 
 
     match("*%4d*","some four digit value is 8000, I say",blah)==1 && blah == 8000
     match("*%4{blah}d*","some four digit value is 8000, I say")==1 && blah == 8000
-  
+
 ***
 
 **Misc Utility**
 **Memory Utility**
 
-  - **freembuf(top)**
-The freembuf() function provides a facility for you to notify the memory manager that you are no longer using a portion of the local memory buffer.
+- **freembuf(top)**
+  The freembuf() function provides a facility for you to notify the memory manager that you are no longer using a portion of the local memory buffer.
 
 For example, if the user changed a parameter on your effect halving your memory requirements, you should use the lowest indices possible, and call this function with the highest index you are using plus 1, i.e. if you are using 128,000 items, you should call freembuf(128001); If you are no longer using any memory, you should call freembuf(0);
 
 Note that calling this does not guarantee that the memory is freed or cleared, it just provides a hint that it is OK to free it.
 
-  - **memcpy(dest,source,length)**
-The memcpy() function provides the ability to quickly copy regions of the local memory buffer. If the buffers overlap and either buffer crosses a 65,536 item boundary, the results may be undefined.
+- **memcpy(dest,source,length)**
+  The memcpy() function provides the ability to quickly copy regions of the local memory buffer. If the buffers overlap and either buffer crosses a 65,536 item boundary, the results may be undefined.
 
-  - **memset(dest,value,length)**
-The memset() function provides the ability to quickly set a region of the local memory buffer to a particular value.
+- **memset(dest,value,length)**
+  The memset() function provides the ability to quickly set a region of the local memory buffer to a particular value.
 
-  - **__memtop()** -- returns the maximum memory words available to the script (read/writes to __memtop()[-1] will succeed, but __memtop()[0] will not)
+- **__memtop()** -- returns the maximum memory words available to the script (read/writes to __memtop()[-1] will succeed, but __memtop()[0] will not)
 
 **Stack**
 A small (approximately 32768 item) user stack is available for use in code:
 
-  - **stack_push(value)**
-Pushes value onto the user stack, returns a reference to the value.
+- **stack_push(value)**
+  Pushes value onto the user stack, returns a reference to the value.
 
-  - **stack_pop(value)**
-Pops a value from the user stack into value, or into a temporary buffer if value is not specified, and returns a reference to where the stack was popped. Note that no checking is done to determine if the stack is empty, and as such stack_pop() will never fail.
+- **stack_pop(value)**
+  Pops a value from the user stack into value, or into a temporary buffer if value is not specified, and returns a reference to where the stack was popped. Note that no checking is done to determine if the stack is empty, and as such stack_pop() will never fail.
 
-  - **stack_peek(index)**
-Returns a reference to the item on the top of the stack (if index is 0), or to the Nth item on the stack if index is greater than 0.
+- **stack_peek(index)**
+  Returns a reference to the item on the top of the stack (if index is 0), or to the Nth item on the stack if index is greater than 0.
 
-  - **stack_exch(value)**
-Exchanges a value with the top of the stack, and returns a reference to the parameter (with the new value).
+- **stack_exch(value)**
+  Exchanges a value with the top of the stack, and returns a reference to the parameter (with the new value).
