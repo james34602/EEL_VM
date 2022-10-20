@@ -71,7 +71,7 @@ enum {
   FUNCTYPE_EELFUNC, // fn is a _codeHandleFunctionRec *
 };
 #define YYSTYPE opcodeRec *
-#define NSEEL_CLOSEFACTOR 0.00001f
+#define NSEEL_CLOSEFACTOR 0.0
 typedef struct opcodeRec opcodeRec;
 typedef struct _codeHandleFunctionRec 
 {

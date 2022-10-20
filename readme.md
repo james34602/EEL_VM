@@ -739,13 +739,12 @@ idx += 1;
 Following are constrained optimization, altough ordinary least squares(OLS) is a type of optimization, the built-in routines are included in Linear algebra section.
 The actual usage is somehow similar to the Matlab counterparts.
 
-- **linprog(f, a, b, problemLen, constraintLen, solution)** -- Solves min f'*x such that A*x ≤ b, we don't support equalities input, user need to convert linear equalities to inequalities and deal with input arguments manually, routine will return objective function value at the solution, the **fval** to stack.
-- **lsqlin(C, d, A, b, problemLen, constraintLen, solution)** -- Solves the linear system C*x = d in the least-squares sense, subject to A*x ≤ b. Routine will return objective function value at the solution, the **fval** to stack.
-- **quadprog(H, f, A, b, problemLen, constraintLen, solution)** -- minimizes 1/2*x'*H*x + f'*x subject to the restrictions A*x ≤ b. We don't support equalities input, user need to convert linear equalities to inequalities and deal with input arguments manually, routine will return objective function value at the solution, the **fval** to stack.
+- **lsqlin(C, d, A, b, problemLen, inequalityLen, solution)** -- Solves the linear system C*x = d in the least-squares sense, subject to A*x ≤ b, we don't support equalities input, user need to convert linear equalities to inequalities and deal with input arguments manually, routine will return objective function value at the solution, the **fval** to stack.
+- **quadprog(problemLen, H, f, inequalityLen, A, b, equalityLen, Aeq, beq, lb, ub, solution)** -- minimizes 1/2*x'*H*x + f'*x subject to the restrictions A*x ≤ b. Routine will return objective function value at the solution, the **fval** to stack.
 
 The function description is not intuitive, for actual use, please check out the examples.
 **Important**
-The solution computed by the optimization algorithm is not identical to Matlab counterpart, but the solution is quite close, the optimization routine author(Fung) had use the routine on optimization-based digital filter design, the design result is almost identical to the filter design Matlab routines.
+The solution computed by the optimization algorithm is not identical to Matlab counterpart, but the solution is quite close, the optimization routine author had use the routine on optimization-based digital filter design, the design result is almost identical to the filter design Matlab routines.
 
 ***
 

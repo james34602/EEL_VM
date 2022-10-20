@@ -378,7 +378,7 @@ int quadprog_ineq(const double *H, const double *f, const double *A, const doubl
 	for (i = 0; i < objectivesLen * objectivesLen; i++)
 		if (fabs(H[i]) > 0.0)
 			counter++;
-	if (counter)
+	if (counter == objectivesLen * objectivesLen)
 		myinvWarm(H, HI, pos, permPtr, perPtr2, objectivesLen);
 	else
 		memcpy(HI, H, objectivesLen * objectivesLen * sizeof(double));
