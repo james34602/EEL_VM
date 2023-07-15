@@ -20,9 +20,8 @@ memuse = InitPinkNoise(pinkNoise, pinkness);
 // Print pink noise "struct" memory usage
 printf("Pink noise struct use up %d elements\n", memuse);
 // Generate pink noise sample by sample
-idx = 0;
-loop(frameCount,
+/*loop(frameCount,
 ptr1Sine[idx] = GeneratePinkNoise(pinkNoise, 1.0);
-idx += 1);
+idx += 1);*/
 // Write WAV file
 suc = writeWavToFile("gen6.wav", channels, fs, frameCount, ptr1Sine);

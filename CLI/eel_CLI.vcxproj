@@ -19,38 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\cpthread.h" />
-    <ClInclude Include="..\dirent.h" />
-    <ClInclude Include="..\dr_flac.h" />
-    <ClInclude Include="..\dr_mp3.h" />
-    <ClInclude Include="..\dr_wav.h" />
-    <ClInclude Include="..\eelCommon.h" />
-    <ClInclude Include="..\eel_matrix.h" />
-    <ClInclude Include="..\fft.h" />
-    <ClInclude Include="..\glue_port.h" />
-    <ClInclude Include="..\ns-eel-int.h" />
-    <ClInclude Include="..\ns-eel.h" />
-    <ClInclude Include="..\numericSys\codelet.h" />
-    <ClInclude Include="..\numericSys\cpoly.h" />
-    <ClInclude Include="..\numericSys\FFTConvolver.h" />
-    <ClInclude Include="..\numericSys\FilterDesign\fdesign.h" />
-    <ClInclude Include="..\numericSys\FilterDesign\polyphaseASRC.h" />
-    <ClInclude Include="..\numericSys\FilterDesign\polyphaseFilterbank.h" />
-    <ClInclude Include="..\numericSys\libsamplerate\common.h" />
-    <ClInclude Include="..\numericSys\libsamplerate\samplerate.h" />
-    <ClInclude Include="..\numericSys\libsamplerate\src_config.h" />
-    <ClInclude Include="..\numericSys\quadprog.h" />
-    <ClInclude Include="..\numericSys\SolveLinearSystem\qr_fact.h" />
-    <ClInclude Include="..\numericSys\solvopt.h" />
-    <ClInclude Include="..\stb_sprintf.h" />
-    <ClInclude Include="..\s_str.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\cpthread.c" />
-    <ClCompile Include="..\fft.c" />
-    <ClCompile Include="..\loose_eel.c" />
     <ClCompile Include="..\nseel-compiler.c" />
     <ClCompile Include="..\nseel-ram.c" />
+    <ClCompile Include="..\loose_eel.c" />
+    <ClCompile Include="..\fft.c" />
     <ClCompile Include="..\numericSys\codelet.c" />
     <ClCompile Include="..\numericSys\cpoly.c" />
     <ClCompile Include="..\numericSys\FFTConvolver.c" />
@@ -60,6 +33,44 @@
     <ClCompile Include="..\numericSys\FilterDesign\generalFdesign.c" />
     <ClCompile Include="..\numericSys\FilterDesign\polyphaseASRC.c" />
     <ClCompile Include="..\numericSys\FilterDesign\polyphaseFilterbank.c" />
+    <ClCompile Include="..\numericSys\HPFloat\atox.c" />
+    <ClCompile Include="..\numericSys\HPFloat\constant.c" />
+    <ClCompile Include="..\numericSys\HPFloat\cxaop.c" />
+    <ClCompile Include="..\numericSys\HPFloat\cxbasic.c" />
+    <ClCompile Include="..\numericSys\HPFloat\cxconstant.c" />
+    <ClCompile Include="..\numericSys\HPFloat\cxconvf.c" />
+    <ClCompile Include="..\numericSys\HPFloat\cxexp.c" />
+    <ClCompile Include="..\numericSys\HPFloat\cxhypb.c" />
+    <ClCompile Include="..\numericSys\HPFloat\cxidiv.c" />
+    <ClCompile Include="..\numericSys\HPFloat\cxpow.c" />
+    <ClCompile Include="..\numericSys\HPFloat\cxprcmp.c" />
+    <ClCompile Include="..\numericSys\HPFloat\cxtrig.c" />
+    <ClCompile Include="..\numericSys\HPFloat\hpaconf.c" />
+    <ClCompile Include="..\numericSys\HPFloat\prcxpr.c" />
+    <ClCompile Include="..\numericSys\HPFloat\print.c" />
+    <ClCompile Include="..\numericSys\HPFloat\prxpr.c" />
+    <ClCompile Include="..\numericSys\HPFloat\sfmod.c" />
+    <ClCompile Include="..\numericSys\HPFloat\shift.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xadd.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xchcof.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xdiv.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xevtch.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xexp.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xfmod.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xfrac.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xhypb.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xivhypb.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xivtrg.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xlog.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xmul.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xneg.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xprcmp.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xpwr.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xsigerr.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xsqrt.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xtodbl.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xtoflt.c" />
+    <ClCompile Include="..\numericSys\HPFloat\xtrig.c" />
     <ClCompile Include="..\numericSys\libsamplerate\samplerate.c" />
     <ClCompile Include="..\numericSys\libsamplerate\src_sinc.c" />
     <ClCompile Include="..\numericSys\MersenneTwister.c" />
@@ -72,6 +83,34 @@
     <ClCompile Include="..\numericSys\solvopt.c" />
     <ClCompile Include="..\s_str.c" />
     <ClCompile Include="..\y.tab.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\cpthread.h" />
+    <ClInclude Include="..\dirent.h" />
+    <ClInclude Include="..\dr_flac.h" />
+    <ClInclude Include="..\dr_mp3.h" />
+    <ClInclude Include="..\dr_wav.h" />
+    <ClInclude Include="..\eelCommon.h" />
+    <ClInclude Include="..\eel_matrix.h" />
+    <ClInclude Include="..\ns-eel-int.h" />
+    <ClInclude Include="..\ns-eel.h" />
+    <ClInclude Include="..\fft.h" />
+    <ClInclude Include="..\glue_port.h" />
+    <ClInclude Include="..\numericSys\codelet.h" />
+    <ClInclude Include="..\numericSys\FFTConvolver.h" />
+    <ClInclude Include="..\numericSys\FilterDesign\fdesign.h" />
+    <ClInclude Include="..\numericSys\FilterDesign\polyphaseASRC.h" />
+    <ClInclude Include="..\numericSys\FilterDesign\polyphaseFilterbank.h" />
+    <ClInclude Include="..\numericSys\HPFloat\cxpre.h" />
+    <ClInclude Include="..\numericSys\HPFloat\hpaconf.h" />
+    <ClInclude Include="..\numericSys\HPFloat\xpre.h" />
+    <ClInclude Include="..\numericSys\libsamplerate\common.h" />
+    <ClInclude Include="..\numericSys\libsamplerate\samplerate.h" />
+    <ClInclude Include="..\numericSys\libsamplerate\src_config.h" />
+    <ClInclude Include="..\numericSys\quadprog.h" />
+    <ClInclude Include="..\numericSys\SolveLinearSystem\qr_fact.h" />
+    <ClInclude Include="..\numericSys\solvopt.h" />
+    <ClInclude Include="..\s_str.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{893B9C0E-73CA-4843-A3BC-8A3FF9055FA8}</ProjectGuid>
@@ -132,20 +171,24 @@
     <IntDir>$(Configuration)_new\</IntDir>
     <OutDir>$(SolutionDir)$(Configuration)_new\</OutDir>
     <TargetExt>.exe</TargetExt>
+    <ExecutablePath>$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.exe</TargetExt>
+    <ExecutablePath>$(VC_ExecutablePath_x64);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(Configuration)_new\</IntDir>
     <OutDir>$(SolutionDir)$(Configuration)_new\</OutDir>
     <TargetExt>.exe</TargetExt>
+    <ExecutablePath>$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.exe</TargetExt>
+    <ExecutablePath>$(VC_ExecutablePath_x64);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
