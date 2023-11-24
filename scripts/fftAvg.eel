@@ -1,6 +1,7 @@
 //printf("%d\n", $MEMBLKLIMIT);
-filename = "sine.wav";
+filename = "../sine.wav";
 x1 = 0;
+fs = 137777;
 suc = decodeWavFromFile(filename, ch, fs, frameCount, x1);
 ofs = x1 + frameCount;
 //(suc <= 0) ? printf("%d\n", suc) : printf("Channels = %d, frameCountPerChannel = %d, ptr = %d\n", ch, frameCount, x1);

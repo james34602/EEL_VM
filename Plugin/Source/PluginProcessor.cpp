@@ -23,18 +23,21 @@ LiveProgrammableDSP::LiveProgrammableDSP() : treeState(*this, nullptr, "Paramete
 	vm = NSEEL_VM_alloc(); // create virtual machine
 	vmFs = NSEEL_VM_regvar(vm, "srate");
 	*vmFs = fs;
-	input1 = NSEEL_VM_regvar(vm, "spl0");
-	input2 = NSEEL_VM_regvar(vm, "spl1");
-	input3 = NSEEL_VM_regvar(vm, "spl2");
-	input4 = NSEEL_VM_regvar(vm, "spl3");
-	input5 = NSEEL_VM_regvar(vm, "spl4");
-	input6 = NSEEL_VM_regvar(vm, "spl5");
+	nSmps = NSEEL_VM_regvar(vm, "nSmps");
+	nCh = NSEEL_VM_regvar(vm, "nCh");
+	*nCh = JucePlugin_MaxNumInputChannels;
+	char splStr[5];
+	for (unsigned int i = 0; i < JucePlugin_MaxNumInputChannels; i++)
+	{
+		sprintf(splStr, "spl%d", i);
+		input[i] = NSEEL_VM_regvar(vm, splStr);
+	}
 	compileContext *ctx = (compileContext*)vm;
 	ptrVM_var_name = ctx->varTable_Names;
 	ptrVM_var_value = ctx->varTable_Values;
 	ptrNumBlocks = &ctx->varTable_numBlocks;
 }
-void LiveProgrammableDSP::LoadEELCode(char *codeTextInit, char *codeTextProcess)
+void LiveProgrammableDSP::LoadEELCode(char *codeTextInit, char *codeTextProcess, char mode)
 {
 	ScopedLock lock(criticalSection);
 	compileSucessfully = 0;
@@ -44,12 +47,15 @@ void LiveProgrammableDSP::LoadEELCode(char *codeTextInit, char *codeTextProcess)
 	memset(ctx->ram_state, 0, sizeof(ctx->ram_state));
 	vmFs = NSEEL_VM_regvar(vm, "srate");
 	*vmFs = fs;
-	input1 = NSEEL_VM_regvar(vm, "spl0");
-	input2 = NSEEL_VM_regvar(vm, "spl1");
-	input3 = NSEEL_VM_regvar(vm, "spl2");
-	input4 = NSEEL_VM_regvar(vm, "spl3");
-	input5 = NSEEL_VM_regvar(vm, "spl4");
-	input6 = NSEEL_VM_regvar(vm, "spl5");
+	nSmps = NSEEL_VM_regvar(vm, "nSmps");
+	nCh = NSEEL_VM_regvar(vm, "nCh");
+	*nCh = JucePlugin_MaxNumInputChannels;
+	char splStr[5];
+	for (unsigned int i = 0; i < JucePlugin_MaxNumInputChannels; i++)
+	{
+		sprintf(splStr, "spl%d", i);
+		input[i] = NSEEL_VM_regvar(vm, splStr);
+	}
 	ptrVM_var_name = ctx->varTable_Names;
 	ptrVM_var_value = ctx->varTable_Values;
 	ptrNumBlocks = &ctx->varTable_numBlocks;
@@ -77,16 +83,14 @@ void LiveProgrammableDSP::LoadEELCode(char *codeTextInit, char *codeTextProcess)
 	if (codehandleInit && codehandleProcess)
 	{
 		if (codehandleProcess)
-			compileSucessfully = 1;
+			compileSucessfully = mode;
 		else
 			compileSucessfully = 0;
 	}
 	else
-	{
 		compileSucessfully = 0;
-	}
-	char *msg = "EEL: Code looks OK\nLua compilation will not be runned\n";
-	EEL_STRING_STDOUT_WRITE(msg, 56);
+	char *msg = "EEL: Code looks OK\nLua compilation will not be run\n";
+	EEL_STRING_STDOUT_WRITE(msg, strlen(msg));
 }
 LiveProgrammableDSP::~LiveProgrammableDSP()
 {
@@ -120,12 +124,12 @@ void LiveProgrammableDSP::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
 	fs = (double)sampleRate;
 	*vmFs = fs;
-	if (compileSucessfully == 1)
+	if (compileSucessfully == 1 || compileSucessfully == 2)
 	{
 		ScopedLock lock(criticalSection);
 		NSEEL_code_execute(codehandleInit);
 	}
-	if (compileSucessfully == 2)
+	if (compileSucessfully == 3)
 	{
 		ScopedLock lock(criticalSection);
 		int top = lua_gettop(actualLuaVM);
@@ -141,7 +145,7 @@ void LiveProgrammableDSP::prepareToPlay(double sampleRate, int samplesPerBlock)
 		else
 		{
 			char erMsg[70] = "Lua: Fail to get reference while re-set sample rate, stop compiling\n";
-			EEL_STRING_STDOUT_WRITE(erMsg, 69);
+			EEL_STRING_STDOUT_WRITE(erMsg, strlen(erMsg));
 			lua_close(actualLuaVM);
 		}
 	}
@@ -205,30 +209,38 @@ void LiveProgrammableDSP::processBlock(AudioBuffer<float>& buffer, MidiBuffer&)
 	// number of samples per buffer
 	const int n = buffer.getNumSamples();
 	// input channels
-	const float *inputs[6] = { buffer.getReadPointer(0), buffer.getReadPointer(1), buffer.getReadPointer(2), buffer.getReadPointer(3), buffer.getReadPointer(4), buffer.getReadPointer(5) };
+	const float *inputs[JucePlugin_MaxNumInputChannels] = { buffer.getReadPointer(0), buffer.getReadPointer(1) };
 	// output channels
-	float* const outputs[6] = { buffer.getWritePointer(0), buffer.getWritePointer(1), buffer.getWritePointer(2), buffer.getWritePointer(3), buffer.getWritePointer(4), buffer.getWritePointer(5) };
+	float* const outputs[JucePlugin_MaxNumInputChannels] = { buffer.getWritePointer(0), buffer.getWritePointer(1) };
 	if (compileSucessfully == 1)
 	{
 		ScopedLock lock(criticalSection);
+		*nSmps = 1;
 		for (int i = 0; i < n; i++)
 		{
-			*input1 = inputs[0][i];
-			*input2 = inputs[1][i];
-			*input3 = inputs[2][i];
-			*input4 = inputs[3][i];
-			*input5 = inputs[4][i];
-			*input6 = inputs[5][i];
+			for (int j = 0; j < JucePlugin_MaxNumInputChannels; j++)
+				*input[j] = inputs[j][i];
 			NSEEL_code_execute(codehandleProcess);
-			outputs[0][i] = (float)*input1;
-			outputs[1][i] = (float)*input2;
-			outputs[2][i] = (float)*input3;
-			outputs[3][i] = (float)*input4;
-			outputs[4][i] = (float)*input5;
-			outputs[5][i] = (float)*input6;
+			for (int j = 0; j < JucePlugin_MaxNumInputChannels; j++)
+				outputs[j][i] = *input[j];
 		}
 	}
 	if (compileSucessfully == 2)
+	{
+		*nSmps = n;
+		float *dat = dataSectionToRamDisk(vm, JucePlugin_MaxNumInputChannels * n);
+		for (int j = 0; j < JucePlugin_MaxNumInputChannels; j++)
+			for (int i = 0; i < n; i++)
+				dat[i + n * j] = inputs[j][i];
+		{
+			ScopedLock lock(criticalSection);
+			NSEEL_code_execute(codehandleProcess);
+		}
+		for (int j = 0; j < JucePlugin_MaxNumInputChannels; j++)
+			for (int i = 0; i < n; i++)
+				outputs[j][i] = dat[i + n * j];
+	}
+	if (compileSucessfully == 3)
 	{
 		ScopedLock lock(criticalSection);
 		for (int i = 0; i < n; i++)
@@ -312,15 +324,28 @@ int LiveProgrammableDSP::compileEEL(const char *eelCode, size_t strLen)
 	}
 	else
 		initSegment += 6;
-	const char *processSegment = strstr(eelCode, "@sample");
-	if (!processSegment)
+	char mode = 0;
+	const char *processSegment = strstr(eelCode, "@frame");
+	if (processSegment)
 	{
-		char *errorMsg = "EEL: @sample section not found\n";
-		EEL_STRING_STDOUT_WRITE(errorMsg, 31);
-		return 0;
+		processSegment += 7;
+		mode = 0;
 	}
 	else
-		processSegment += 8;
+	{
+		processSegment = strstr(eelCode, "@sample");
+		if (!processSegment)
+		{
+			char *errorMsg = "EEL: @sample section not found\n";
+			EEL_STRING_STDOUT_WRITE(errorMsg, 31);
+			return 0;
+		}
+		else
+		{
+			processSegment += 8;
+			mode = 1;
+		}
+	}
 	char *codeTextInit = (char*)malloc(strLen * sizeof(char));
 	char *codeTextProcess = (char*)malloc(strLen * sizeof(char));
 	memset(codeTextInit, 0, strLen * sizeof(char));
@@ -329,22 +354,34 @@ int LiveProgrammableDSP::compileEEL(const char *eelCode, size_t strLen)
 	{
 		if (initSegment < processSegment)
 		{
-			int cpyLen = processSegment - initSegment - (8 + 1);
-			if (cpyLen > 0)
-				strncpy(codeTextInit, initSegment, cpyLen);
-			if (processSegment - eelCode < strLen)
+			const char *sampleSegment = strstr(eelCode, "@sample");
+			if ((sampleSegment - processSegment) > 0)
 			{
-				strcpy(codeTextProcess, processSegment);
+				int cpyLen = processSegment - initSegment - 8;
+				if (cpyLen > 0)
+					strncpy(codeTextInit, initSegment, cpyLen);
+				if (processSegment - eelCode < strLen)
+					strncpy(codeTextProcess, processSegment, (sampleSegment - processSegment) - 1);
 			}
-			LoadEELCode(codeTextInit, codeTextProcess);
+			else
+			{
+				int cpyLen;
+				if (sampleSegment)
+					cpyLen = sampleSegment - initSegment;
+				else
+					cpyLen = processSegment - initSegment - (7 + 1);
+				if (cpyLen > 0)
+					strncpy(codeTextInit, initSegment, cpyLen);
+				if (processSegment - eelCode < strLen)
+					strcpy(codeTextProcess, processSegment);
+			}
+			LoadEELCode(codeTextInit, codeTextProcess, mode);
 		}
 		else
 		{
-			strcpy(codeTextInit, initSegment);
-			int cpyLen = initSegment - processSegment - (6 + 1);
-			if (cpyLen > 0)
-				strncpy(codeTextProcess, processSegment, cpyLen);
-			LoadEELCode(codeTextInit, codeTextProcess);
+			free(codeTextInit);
+			free(codeTextProcess);
+			return 0;
 		}
 	}
 	free(codeTextInit);
@@ -496,7 +533,7 @@ void LiveProgrammableDSP::LoadLuaCode(const char *luaCode, size_t strLen)
 	}
 	lua_getglobal(actualLuaVM, "process");  // function to be called
 	luaProcessRef = luaL_ref(actualLuaVM, LUA_REGISTRYINDEX);
-	compileSucessfully = 2;
+	compileSucessfully = 3;
 	EEL_STRING_STDOUT_WRITE("Lua: Code looks OK\n", 16);
 }
 int LiveProgrammableDSP::compileLua(const char *luaCode, size_t strLen)

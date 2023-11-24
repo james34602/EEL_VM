@@ -206,6 +206,9 @@
     <ClCompile Include="..\numericSys\FilterDesign\polyphaseFilterbank.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\numericSys\libsamplerate\src_linear.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\cpthread.h">

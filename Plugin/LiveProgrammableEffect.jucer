@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="Da7JKE" name="LiveProgrammableEffect" projectType="audioplug"
-              version="3.7.1" pluginFormats="buildStandalone,buildVST" pluginChannelConfigs="{6,6}"
+              version="3.7.1" pluginFormats="buildStandalone,buildVST" pluginChannelConfigs="{2,2}"
               companyName="James Fung" companyEmail="james34602@gmail.com"
               pluginManufacturer="James34602" pluginName="LiveProg" pluginCode="jlpg"
               defines="JUCE_DONT_AUTO_OPEN_MIDI_DEVICES_ON_MOBILE&#10;TURN_ON_VST&#10;JUCE_MODAL_LOOPS_PERMITTED"
@@ -161,7 +161,7 @@
           <FILE id="iFl0Ex" name="common.h" compile="0" resource="0" file="../numericSys/libsamplerate/common.h"/>
           <FILE id="ybuqE9" name="samplerate.c" compile="1" resource="0" file="../numericSys/libsamplerate/samplerate.c"/>
           <FILE id="QbPZwI" name="samplerate.h" compile="0" resource="0" file="../numericSys/libsamplerate/samplerate.h"/>
-          <FILE id="yJlOpl" name="src_config.h" compile="0" resource="0" file="../numericSys/libsamplerate/src_config.h"/>
+          <FILE id="W2mwp1" name="src_linear.c" compile="1" resource="0" file="../numericSys/libsamplerate/src_linear.c"/>
           <FILE id="EeWVdw" name="src_sinc.c" compile="1" resource="0" file="../numericSys/libsamplerate/src_sinc.c"/>
         </GROUP>
         <GROUP id="{D3FF6315-CD6F-30C1-F465-9D92E986EB3C}" name="FilterDesign">

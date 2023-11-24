@@ -1,0 +1,41 @@
+desc: Moving min/max, median filter and Hilbert transform filter test
+
+@init
+windowSize = 500;
+transition = (2.0 * 20.0) / srate;
+minMaxFilt1 = 0;
+memSize1 = movingMinMaxInit(minMaxFilt1, windowSize);
+minMaxFilt2 = minMaxFilt1 + memSize1;
+
+memSize1 = movingMinMaxInit(minMaxFilt2, windowSize);
+buf_minmax1 = minMaxFilt2 + memSize1;
+buf_minmax2 = buf_minmax1 + 2;
+
+medFilt1 = buf_minmax2 + 2;
+memSize2 = movingMedianInit(medFilt1, windowSize);
+medFilt2 = medFilt1 + memSize2;
+memSize2 = movingMedianInit(medFilt2, windowSize);
+
+hil1 = medFilt2 + memSize2;
+size = iirHilbertInit(hil1, 4, transition);
+
+hil2 = hil1 + size;
+size = iirHilbertInit(hil2, 4, transition);
+
+buf_cplx1 = hil2 + size;
+buf_cplx2 = buf_cplx1 + 2;
+
+pwr1 = 0;
+pwr2 = 0;
+
+@sample
+movingMinMaxProcess(minMaxFilt1, spl0, buf_minmax1);
+med1 = movingMedianProcess(medFilt1, spl0);
+movingMinMaxProcess(minMaxFilt2, spl1, buf_minmax2);
+med2 = movingMedianProcess(medFilt2, spl1);
+iirHilbertProcess(hil1, spl0, buf_cplx1);
+iirHilbertProcess(hil2, spl1, buf_cplx2);
+pwr1 = pwr1 * 0.99 + hypot(buf_cplx1[0], buf_cplx1[1]) * 0.01;
+pwr2 = pwr2 * 0.99 + hypot(buf_cplx2[0], buf_cplx2[1]) * 0.01;
+spl0 = spl0 + med1;
+spl1 = buf_minmax2[1] * pwr2 + spl1;

@@ -40,12 +40,12 @@ public:
 	// DSP variable
 	NSEEL_VMCTX vm;
 	NSEEL_CODEHANDLE codehandleInit, codehandleProcess;
-	float *vmFs, *input1, *input2, *input3, *input4, *input5, *input6;
+	float *vmFs, *input[JucePlugin_MaxNumInputChannels], *nSmps, *nCh;
 	// Lua VM
 	lua_State *actualLuaVM;
 	int luaStructRef, luaProcessRef;
 	//
-	void LoadEELCode(char *codeTextInit, char *codeTextProcess);
+	void LoadEELCode(char *codeTextInit, char *codeTextProcess, char mode);
 	void LoadLuaCode(const char *eelCode, size_t strLen);
 	int compileEEL(const char *eelCode, size_t strLen);
 	int validateLua(const char *eelCode, size_t strLen);

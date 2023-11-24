@@ -904,7 +904,7 @@ yyparse (context)
   /* The look-ahead symbol.  */
 int32_t yychar;
 /* The semantic value of the look-ahead symbol.  */
-YYSTYPE yylval;
+YYSTYPE yylval = 0;
 /* Number of syntax errors so far.  */
 int32_t yynerrs;
 /* Location data for the look-ahead symbol.  */
