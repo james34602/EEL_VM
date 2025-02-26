@@ -1,7 +1,7 @@
 //printf("%d\n", $MEMBLKLIMIT);
 filename = "../sine.wav";
 x1 = 0;
-fs = 137777;
+fs = 44100;
 suc = decodeWavFromFile(filename, ch, fs, frameCount, x1);
 ofs = x1 + frameCount;
 //(suc <= 0) ? printf("%d\n", suc) : printf("Channels = %d, frameCountPerChannel = %d, ptr = %d\n", ch, frameCount, x1);
@@ -9,14 +9,17 @@ ch > 1 ? (
 printf("Channel must be mono\nExiting\n");
 );
 bufpos = 0;
-stftIndexLeft = ofs;
-fftLen = 262144;
+analyWnd = ofs;
+fftLen = 8192;
+getCosineWindows(analyWnd, fftLen, "hann");
+stftIndexLeft = analyWnd + fftLen;
 halfLen = fftLen / 2 + 1;
 ovp = 4;
 memreq = stftCheckMemoryRequirement(stftIndexLeft, fftLen, ovp, 1);
 stftStructLeft = stftIndexLeft + 60;
 //printf("memreq: %d\n", memreq);
 requiredSamples = stftInit(stftIndexLeft, stftStructLeft);
+stftSetAsymWnd(stftIndexLeft, stftStructLeft, analyWnd, analyWnd);
 wndPwr = stftGetWindowPower(stftIndexLeft, stftStructLeft);
 //printf("requiredSamples: %d\n", memreq, requiredSamples);
 dcReImSmps = 2;
@@ -26,28 +29,41 @@ ema = 0.1;
 minusEma = 1 - ema;
 idx = 0;
 writePtr = 0;
+stftFrames = 0;
 loop(frameCount,
 inBufLeft[bufpos] = x1[idx];
 bufpos += 1;
 bufpos >= requiredSamples ?
 (
 	arrayLen = stftForward(inBufLeft, stftIndexLeft, stftStructLeft, 1);
-	i = 0;
+	/*i = 0;
 	loop(halfLen / 2,
 	realIdx = i >> 1;
 	magnitudeResponse[realIdx] = hypot(inBufLeft[i], inBufLeft[i + 1]) * ema + magnitudeResponse[realIdx] * minusEma;
+	i += 2);*/
+	i = 0;
+	loop(halfLen / 2,
+	realIdx = i >> 1;
+	magnitudeResponse[realIdx] += hypot(inBufLeft[i], inBufLeft[i + 1]);
 	i += 2);
 	memcpy(y1 + writePtr, outBuf1Left, requiredSamples);
 	writePtr += requiredSamples;
 	bufpos = 0;
+	stftFrames += 1;
 );
 idx += 1;
 );
 printf("freq,db\n");
 mindBDouble = 20 * log10($EPS);
-idx = 0;
+/*idx = 0;
 loop(halfLen,
 magnitudeResponse[idx] *= wndPwr;
+db = (magnitudeResponse[idx] < $EPS) ? mindBDouble : 20 * log10(magnitudeResponse[idx]);
+printf("%1.14f,%1.14f\n", idx * (fs / fftLen), db);
+idx += 1);*/
+idx = 0;
+loop(halfLen,
+magnitudeResponse[idx] = (magnitudeResponse[idx] * wndPwr) / stftFrames;
 db = (magnitudeResponse[idx] < $EPS) ? mindBDouble : 20 * log10(magnitudeResponse[idx]);
 printf("%1.14f,%1.14f\n", idx * (fs / fftLen), db);
 idx += 1);

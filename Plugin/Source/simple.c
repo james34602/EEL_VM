@@ -38,7 +38,7 @@ int simpleCompress(elzma_file_format format, const unsigned char * inData, size_
     elzma_compress_handle hand;
     /* allocate compression handle */
     hand = elzma_compress_alloc();
-    rc = elzma_compress_config(hand, ELZMA_LC_DEFAULT, ELZMA_LP_DEFAULT, ELZMA_PB_DEFAULT, 9, (1 << 21), format, inLen);
+    rc = elzma_compress_config(hand, ELZMA_LC_DEFAULT, ELZMA_LP_DEFAULT, ELZMA_PB_DEFAULT, 9, (1 << 27), format, inLen);
     if (rc != ELZMA_E_OK)
 	{
         elzma_compress_free(&hand);

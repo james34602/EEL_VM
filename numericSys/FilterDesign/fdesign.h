@@ -2,6 +2,34 @@
 #define __FDESIGN_H__
 typedef struct
 {
+	double angle, offset;
+} SineS_S;
+extern double SineS_SGetSample(SineS_S* sine);
+extern void ComplexExponentialS_SGetSample(SineS_S* sine, double* re, double* im);
+extern SineS_S InitSineS_SGenerator(double frequency, double fs);
+typedef struct
+{
+	double gCoeff; // gain element 
+	double RCoeff; // feedback damping element
+	double precomputeCoeff1, precomputeCoeff2, precomputeCoeff3, precomputeCoeff4;
+	double z1_A, z2_A; // state variables (z^-1)
+} StateVariable2ndOrder;
+extern void InitStateVariable2ndOrder(StateVariable2ndOrder* svf);
+extern void refreshStateVariable2ndOrder(StateVariable2ndOrder* svf, const double fs, const double cutoffFreq, const double Q);
+extern double ProcessStateVariable2ndOrder(StateVariable2ndOrder* svf, const double x, int filterType);
+extern double ProcessPeakStateVariable2ndOrder(StateVariable2ndOrder* svf, const double x, double shelfGain);
+#define LPC_MAX_ORDER (64)
+typedef struct
+{
+	unsigned int P;
+	float kmPrev[LPC_MAX_ORDER], dm[LPC_MAX_ORDER], nm[LPC_MAX_ORDER], f[LPC_MAX_ORDER], b[LPC_MAX_ORDER * 2], fx[LPC_MAX_ORDER], bx[LPC_MAX_ORDER * 2], fe_n[LPC_MAX_ORDER], be_n[LPC_MAX_ORDER * 2];
+	float lam;
+} burgSampleBasedLPC;
+extern void initBurgSampleBasedLPC(burgSampleBasedLPC* lpc, unsigned int P, float lam);
+extern void processBurgSampleBasedLPC1ch(burgSampleBasedLPC* lpc, float ref, float x1, float* y1);
+extern void processBurgSampleBasedLPC2ch(burgSampleBasedLPC* lpc, float ref, float x1, float x2, float* y1, float* y2);
+typedef struct
+{
 	double b1, b2, a1_lp, a2_lp, a1_hp, a2_hp;
 	double lp_xm0, lp_xm1, hp_xm0, hp_xm1;
 } LinkwitzRileyCrossover;

@@ -18,7 +18,7 @@ LiveProgEditor::LiveProgEditor(LiveProgrammableDSP &p) : AudioProcessorEditor(&p
 	addAndMakeVisible(textContent.get());
 	textContent->setMultiLine(true, false);
 	textContent->setReadOnly(false);
-	textContent->setCaretVisible(false);
+	textContent->setCaretVisible(true);
 	textContent->setReturnKeyStartsNewLine(true);
 	textContent->setFont(Font(17));
 	textContent->fileCompPtr = fileComp;
@@ -28,7 +28,7 @@ LiveProgEditor::LiveProgEditor(LiveProgrammableDSP &p) : AudioProcessorEditor(&p
 	addAndMakeVisible(consoleOutput.get());
 	consoleOutput->setMultiLine(true, false);
 	consoleOutput->setReadOnly(false);
-	consoleOutput->setCaretVisible(false);
+	consoleOutput->setCaretVisible(true);
 	consoleOutput->setReturnKeyStartsNewLine(true);
 	consoleOutput->setFont(Font(17));
 	consoleOutput->fileCompPtr = fileComp;
@@ -38,7 +38,8 @@ LiveProgEditor::LiveProgEditor(LiveProgrammableDSP &p) : AudioProcessorEditor(&p
 	playButton.onClick = [this]
 	{
 		table.allowUpdate = 0;
-		processor.playButtonClicked(textContent->getText());
+		processor.restoredText = textContent->getText();
+		processor.playButtonClicked(processor.restoredText);
 		table.ptrVar_name = processor.ptrVM_var_name;
 		table.ptrVar_value = processor.ptrVM_var_value;
 		table.ptrNB = processor.ptrNumBlocks;

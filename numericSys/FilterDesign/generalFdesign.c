@@ -469,6 +469,168 @@ int32_t tf2sos(double *b, uint32_t bLen, double *a, uint32_t aLen, double **sos)
 #ifndef M_2PI
 #define M_2PI (M_PI * 2.0)
 #endif
+double SineS_SGetSample(SineS_S* sine)
+{
+	double angle = sine->angle;
+	sine->angle += sine->offset; // previous angle plus offset
+	if (sine->angle > M_2PI) // reset angle if > 2*PI
+		sine->angle -= M_2PI; // angle = angle - 2*PI
+	return sin(angle);
+}
+void ComplexExponentialS_SGetSample(SineS_S* sine, double* re, double* im)
+{
+	double angle = sine->angle;
+	sine->angle += sine->offset; // previous angle plus offset
+	if (sine->angle > M_2PI) // reset angle if > 2*PI
+		sine->angle -= M_2PI; // angle = angle - 2*PI
+	*re = cos(angle);
+	*im = sin(angle);
+}
+SineS_S InitSineS_SGenerator(double frequency, double fs)
+{
+	SineS_S sine = { 0.0, (double)(2.0 * M_PI * frequency / fs) };
+	return sine;
+}
+void InitStateVariable2ndOrder(StateVariable2ndOrder* svf)
+{
+	svf->gCoeff = 1.0;
+	svf->RCoeff = 1.0;
+	svf->precomputeCoeff1 = 0.0;
+	svf->precomputeCoeff2 = 0.0;
+	svf->precomputeCoeff3 = 0.0;
+	svf->precomputeCoeff4 = 0.0;
+	svf->z1_A = svf->z2_A = 0.0;
+}
+void refreshStateVariable2ndOrder(StateVariable2ndOrder* svf, const double fs, const double cutoffFreq, const double Q)
+{
+	const double T = 1.0 / fs;
+	const double wa = (2.0 / T) * tan((cutoffFreq * 2.0 * M_PI) * T / 2.0);
+	const double gCoeff = wa * T / 2.0;
+	const double RCoeff = 1.0 / (2.0 * Q);
+	svf->gCoeff = gCoeff;
+	svf->RCoeff = RCoeff;
+	svf->precomputeCoeff1 = (2.0 * RCoeff + gCoeff);
+	svf->precomputeCoeff2 = (1.0 / (1.0 + (2.0 * RCoeff * gCoeff) + gCoeff * gCoeff));
+	svf->precomputeCoeff3 = (2.0 * RCoeff);
+	svf->precomputeCoeff4 = (4.0 * RCoeff);
+}
+double ProcessStateVariable2ndOrder(StateVariable2ndOrder* svf, const double x, int filterType)
+{
+	const double HP = (x - svf->precomputeCoeff1 * svf->z1_A - svf->z2_A) * svf->precomputeCoeff2;
+	const double BP = HP * svf->gCoeff + svf->z1_A;
+	const double LP = BP * svf->gCoeff + svf->z2_A;
+	svf->z1_A = svf->gCoeff * HP + BP;
+	svf->z2_A = svf->gCoeff * BP + LP;
+	switch (filterType)
+	{
+	case 0:
+		return LP; // Low pass
+		break;
+	case 1:
+		return BP; // Band pass
+		break;
+	case 2:
+		return HP; // High pass
+		break;
+	case 3:
+		return svf->precomputeCoeff3 * BP; // Unity gain band pass
+		break;
+	case 4:
+		return x - (svf->precomputeCoeff3 * BP); // Notch
+		break;
+	case 5:
+		return x - svf->precomputeCoeff4 * BP; // All pass
+		break;
+	default:
+		return 0.0;
+		break;
+	}
+}
+double ProcessPeakStateVariable2ndOrder(StateVariable2ndOrder* svf, const double x, double shelfGain)
+{
+	const double HP = (x - svf->precomputeCoeff1 * svf->z1_A - svf->z2_A) * svf->precomputeCoeff2;
+	const double BP = HP * svf->gCoeff + svf->z1_A;
+	const double LP = BP * svf->gCoeff + svf->z2_A;
+	svf->z1_A = svf->gCoeff * HP + BP;
+	svf->z2_A = svf->gCoeff * BP + LP;
+	return x + (svf->precomputeCoeff3 * BP) * (shelfGain - 1.0);
+}
+void initBurgSampleBasedLPC(burgSampleBasedLPC* lpc, unsigned int P, float lam)
+{
+	memset(lpc, 0, sizeof(burgSampleBasedLPC));
+	lpc->P = P;
+	if (lpc->P > LPC_MAX_ORDER)
+		lpc->P = LPC_MAX_ORDER;
+	lpc->lam = lam;
+	float epsi = (float)pow(10, -12); // SMALL CONSTANT
+	for (unsigned int i = 0; i < lpc->P; i++)
+		lpc->dm[i] = lpc->nm[i] = epsi;
+}
+void processBurgSampleBasedLPC2ch(burgSampleBasedLPC* lpc, float ref, float x1, float x2, float* y1, float* y2)
+{
+	// calculate LPC using Burg-Lattice
+	lpc->f[0] = ref;
+	lpc->b[0] = ref;
+	lpc->fx[0] = x1;
+	lpc->bx[0] = x1;
+	lpc->fe_n[0] = x2;
+	lpc->be_n[0] = x2;
+	for (unsigned int m = 1; m < lpc->P; m++)
+	{
+		// Burg Lattice Algorithm
+		lpc->dm[m - 1] = lpc->lam * lpc->dm[m - 1] + (1.0f - lpc->lam) * (lpc->f[m - 1] * lpc->f[m - 1] + lpc->b[m - 1 + lpc->P] * lpc->b[m - 1 + lpc->P]);
+		lpc->nm[m - 1] = lpc->lam * lpc->nm[m - 1] + (1.0f - lpc->lam) * -2.0f * (lpc->f[m - 1] * lpc->b[m - 1 + lpc->P]);
+		float km = lpc->nm[m - 1] / lpc->dm[m - 1];
+		// Adaptive Lattice Predictor
+		lpc->f[m] = lpc->f[m - 1] + km * lpc->b[m - 1 + lpc->P];
+		lpc->b[m] = lpc->b[m - 1 + lpc->P] + km * lpc->f[m - 1];
+		// perform filtering using the km from last iteration
+		// Weighted Lattice Predictor for Updating Input Vector
+		lpc->fx[m] = lpc->fx[m - 1] + lpc->kmPrev[m] * lpc->bx[m - 1 + lpc->P];
+		lpc->bx[m] = lpc->bx[m - 1 + lpc->P] + lpc->kmPrev[m] * lpc->fx[m - 1];
+		// Lattice Predictor for Updating Error Vector
+		lpc->fe_n[m] = lpc->fe_n[m - 1] + lpc->kmPrev[m] * lpc->be_n[m - 1 + lpc->P];
+		lpc->be_n[m] = lpc->be_n[m - 1 + lpc->P] + lpc->kmPrev[m] * lpc->fe_n[m - 1];
+		lpc->kmPrev[m] = km;
+	}
+	for (unsigned int m = 0; m < lpc->P; m++)
+	{
+		lpc->b[m + lpc->P] = lpc->b[m];
+		lpc->bx[m + lpc->P] = lpc->bx[m];
+		lpc->be_n[m + lpc->P] = lpc->be_n[m];
+	}
+	*y1 = lpc->fx[lpc->P - 1];
+	*y2 = lpc->fe_n[lpc->P - 1];
+}
+void processBurgSampleBasedLPC1ch(burgSampleBasedLPC* lpc, float ref, float x1, float* y1)
+{
+	// calculate LPC using Burg-Lattice
+	lpc->f[0] = ref;
+	lpc->b[0] = ref;
+	lpc->fx[0] = x1;
+	lpc->bx[0] = x1;
+	for (unsigned int m = 1; m < lpc->P; m++)
+	{
+		// Burg Lattice Algorithm
+		lpc->dm[m - 1] = lpc->lam * lpc->dm[m - 1] + (1.0f - lpc->lam) * (lpc->f[m - 1] * lpc->f[m - 1] + lpc->b[m - 1 + lpc->P] * lpc->b[m - 1 + lpc->P]);
+		lpc->nm[m - 1] = lpc->lam * lpc->nm[m - 1] + (1.0f - lpc->lam) * -2.0f * (lpc->f[m - 1] * lpc->b[m - 1 + lpc->P]);
+		float km = lpc->nm[m - 1] / lpc->dm[m - 1];
+		// Adaptive Lattice Predictor
+		lpc->f[m] = lpc->f[m - 1] + km * lpc->b[m - 1 + lpc->P];
+		lpc->b[m] = lpc->b[m - 1 + lpc->P] + km * lpc->f[m - 1];
+		// perform filtering using the km from last iteration
+		// Weighted Lattice Predictor for Updating Input Vector
+		lpc->fx[m] = lpc->fx[m - 1] + lpc->kmPrev[m] * lpc->bx[m - 1 + lpc->P];
+		lpc->bx[m] = lpc->bx[m - 1 + lpc->P] + lpc->kmPrev[m] * lpc->fx[m - 1];
+		lpc->kmPrev[m] = km;
+	}
+	for (unsigned int m = 0; m < lpc->P; m++)
+	{
+		lpc->b[m + lpc->P] = lpc->b[m];
+		lpc->bx[m + lpc->P] = lpc->bx[m];
+	}
+	*y1 = lpc->fx[lpc->P - 1];
+}
 void LWZRCalculateCoefficients(LinkwitzRileyCrossover *lr2, double fs, double fc, char apf)
 {
 	double fpi = M_PI * fc;

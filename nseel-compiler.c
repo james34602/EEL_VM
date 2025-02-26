@@ -2136,7 +2136,9 @@ static float NSEEL_CGEN_CALL getCosineWindows(void *opaque, INT_PTR num_param, f
 	float *fmt_index = parms[2];
 	const char *fmt = (const char *)GetStringForIndex(c->region_context, *fmt_index, 0);
 	float *start2 = parms[1];
-	genWnd(indexer, (int32_t)(*start2 + NSEEL_CLOSEFACTOR), fmt);
+	int32_t elements = (int32_t)(*start2 + NSEEL_CLOSEFACTOR);
+	if (elements > 0)
+		genWnd(indexer, elements, fmt);
 	return 0;
 }
 static float NSEEL_CGEN_CALL getAsymmetricCosine(void *opaque, INT_PTR num_param, float **parms)
@@ -2648,16 +2650,16 @@ static float NSEEL_CGEN_CALL _eel_base64_encodeBinaryToTextFile(void *opaque, fl
 		{
 			unsigned char *buffer = 0;
 			long length;
-			FILE *textFile = fopen(src, "rb");
-			if (textFile)
+			FILE *fp = fopen(src, "rb");
+			if (fp)
 			{
-				fseek(textFile, 0, SEEK_END);
-				length = ftell(textFile);
-				fseek(textFile, 0, SEEK_SET);
+				fseek(fp, 0, SEEK_END);
+				length = ftell(fp);
+				fseek(fp, 0, SEEK_SET);
 				buffer = (unsigned char*)malloc(length + 1);
 				if (buffer)
-					fread((void*)buffer, 1, length, textFile);
-				fclose(textFile);
+					fread((void*)buffer, 1, length, fp);
+				fclose(fp);
 				buffer[length] = '\0';
 			}
 			size_t outLen = 0;
@@ -2762,16 +2764,16 @@ static float NSEEL_CGEN_CALL _eel_base64_decodeBinaryToTextFile(void *opaque, fl
 		{
 			unsigned char *buffer = 0;
 			long length;
-			FILE *textFile = fopen(src, "r");
-			if (textFile)
+			FILE *fp = fopen(src, "r");
+			if (fp)
 			{
-				fseek(textFile, 0, SEEK_END);
-				length = ftell(textFile);
-				fseek(textFile, 0, SEEK_SET);
+				fseek(fp, 0, SEEK_END);
+				length = ftell(fp);
+				fseek(fp, 0, SEEK_SET);
 				buffer = (unsigned char*)malloc(length + 1);
 				if (buffer)
-					fread(buffer, 1, length, textFile);
-				fclose(textFile);
+					fread(buffer, 1, length, fp);
+				fclose(fp);
 				buffer[length] = '\0';
 			}
 			size_t outLen = 0;
@@ -2850,10 +2852,100 @@ static float NSEEL_CGEN_CALL _eel_importFloatArrayFromString(void *opaque, float
 	uint32_t offs1 = (uint32_t)(*pointer + NSEEL_CLOSEFACTOR);
 	float *userspaceFLT = __NSEEL_RAMAlloc(c->ram_state, offs1);
 	int32_t elements;
-	float *convertedFLT = string2FloatArray((char*)FLTBuf, &elements);
+	float *convertedFLT = string2FloatArray(FLTBuf, &elements);
 	memcpy(userspaceFLT, convertedFLT, elements * sizeof(float));
 	free(convertedFLT);
 	return (float)elements;
+}
+int32_t get_double(char* val, double* F)
+{
+	char* eptr;
+	errno = 0;
+	double f = strtod(val, &eptr);
+	if (eptr != val && errno != ERANGE)
+	{
+		*F = f;
+		return 1;
+	}
+	return 0;
+}
+double* string2DoubleArray(char* frArbitraryEqString, int32_t* elements)
+{
+	char* p = frArbitraryEqString;
+	char* counter = frArbitraryEqString;
+	int32_t i = 0, count = 0;
+	double number;
+	while (*p)
+	{
+		if (get_double(p, &number))
+		{
+			strtod(p, &p);
+			count++;
+		}
+		else
+			p++;
+	}
+	*elements = count;
+	double* arrayF = (double*)malloc(count * sizeof(double));
+	while (*counter)
+	{
+		if (get_double(counter, &number))
+		{
+			arrayF[i] = strtod(counter, &counter);
+			i++;
+		}
+		else
+			counter++;
+	}
+	return arrayF;
+}
+static float NSEEL_CGEN_CALL _eel_importDoubleArrayFromString(void* opaque, float* fn_index, float* pointer)
+{
+	compileContext* c = (compileContext*)opaque;
+	const char* FLTBuf = (const char*)GetStringForIndex(c->region_context, *fn_index, 0);
+	uint32_t offs1 = (uint32_t)(*pointer + NSEEL_CLOSEFACTOR);
+	float* userspaceFLT = __NSEEL_RAMAlloc(c->ram_state, offs1);
+	int32_t elements;
+	double* convertedFLT = string2DoubleArray(FLTBuf, &elements);
+	memcpy(userspaceFLT, convertedFLT, elements * sizeof(double));
+	free(convertedFLT);
+	return (float)(elements << 1);
+}
+static float NSEEL_CGEN_CALL _eel_importFloatArrayFromFile(void* opaque, float* fn_index, float* pointer)
+{
+	compileContext* c = (compileContext*)opaque;
+	const char* FLTBuf = (const char*)GetStringForIndex(c->region_context, *fn_index, 0);
+	uint32_t offs1 = (uint32_t)(*pointer + NSEEL_CLOSEFACTOR);
+	float* userspaceFLT = __NSEEL_RAMAlloc(c->ram_state, offs1);
+	int32_t elements = 0;
+	FILE* fp = fopen(FLTBuf, "rb");
+	if (fp)
+	{
+		fseek(fp, 0, SEEK_END);
+		elements = ftell(fp);
+		fseek(fp, 0, SEEK_SET);
+		fread(userspaceFLT, 1, elements, fp);
+		fclose(fp);
+	}
+	return (float)(elements / sizeof(float));
+}
+static float NSEEL_CGEN_CALL _eel_importDoubleArrayFromFile(void* opaque, float* fn_index, float* pointer)
+{
+	compileContext* c = (compileContext*)opaque;
+	const char* FLTBuf = (const char*)GetStringForIndex(c->region_context, *fn_index, 0);
+	uint32_t offs1 = (uint32_t)(*pointer + NSEEL_CLOSEFACTOR);
+	float* userspaceFLT = __NSEEL_RAMAlloc(c->ram_state, offs1);
+	int32_t elements = 0;
+	FILE* fp = fopen(FLTBuf, "rb");
+	if (fp)
+	{
+		fseek(fp, 0, SEEK_END);
+		elements = ftell(fp);
+		fseek(fp, 0, SEEK_SET);
+		fread(userspaceFLT, 1, elements, fp);
+		fclose(fp);
+	}
+	return (float)(elements / sizeof(double) * (sizeof(double) / sizeof(float)));
 }
 void fractionalDelayLine_clear(float *fdl)
 {
@@ -2950,6 +3042,162 @@ static float NSEEL_CGEN_CALL FIRProcess(float *blocks, float *start, float *x, f
 	else
 		fir[0] = (float)pos;
 	return y;
+}
+typedef struct
+{
+	unsigned char config_5_6;
+	unsigned int stages;
+} iirSOS;
+static float NSEEL_CGEN_CALL IIRSOSInit(float *blocks, float *start, float *f_config_5_6, float *f_orders)
+{
+	const size_t strSize = (sizeof(iirSOS) / sizeof(float) + 1) * sizeof(float);
+	int32_t offs1 = (int32_t)(*start + NSEEL_CLOSEFACTOR);
+	float *fir = __NSEEL_RAMAlloc(blocks, (uint64_t)offs1);
+	iirSOS *filt = (iirSOS*)fir;
+	filt->config_5_6 = (unsigned char)(*f_config_5_6 + NSEEL_CLOSEFACTOR);
+	filt->stages = (unsigned int)(*f_orders + NSEEL_CLOSEFACTOR);
+	double* z0 = (double*)(((char*)fir) + strSize);
+	double* z1 = z0 + filt->stages;
+	memset(z0, 0, filt->stages * sizeof(double));
+	memset(z1, 0, filt->stages * sizeof(double));
+	return strSize / sizeof(float) + 2 * filt->stages * (sizeof(double) / sizeof(float));
+}
+static float NSEEL_CGEN_CALL IIRSOSProcess(float* blocks, float* start, float* x, float* coe)
+{
+	const size_t strSize = (sizeof(iirSOS) / sizeof(float) + 1) * sizeof(float);
+	int32_t offs1 = (int32_t)(*start + NSEEL_CLOSEFACTOR);
+	iirSOS* filt = __NSEEL_RAMAlloc(blocks, (uint64_t)offs1);
+	unsigned char config_5_6 = filt->config_5_6;
+	unsigned int stages = filt->stages;
+	double* z0 = (double*)(((char*)filt) + strSize);
+	double* z1 = z0 + filt->stages;
+	int32_t offs2 = (int32_t)(*coe + NSEEL_CLOSEFACTOR);
+	double* SOS = __NSEEL_RAMAlloc(blocks, (uint64_t)offs2);
+	double Xi = (double)*x;
+	if (config_5_6 == 5)
+	{
+		for (unsigned int i = 0; i < stages; i++)
+		{
+			double m_b0 = SOS[5 * i + 0];
+			double m_b1 = SOS[5 * i + 1];
+			double m_b2 = SOS[5 * i + 2];
+			double m_a1 = SOS[5 * i + 3];
+			double m_a2 = SOS[5 * i + 4];
+			double w = Xi - m_a1 * z0[i] - m_a2 * z1[i];
+			Xi = m_b0 * w + m_b1 * z0[i] + m_b2 * z1[i];
+			z1[i] = z0[i];
+			z0[i] = w;
+		}
+	}
+	else
+	{
+		for (unsigned int i = 0; i < stages; i++)
+		{
+			double m_b0 = SOS[6 * i + 0];
+			double m_b1 = SOS[6 * i + 1];
+			double m_b2 = SOS[6 * i + 2];
+			double m_a1 = SOS[6 * i + 4];
+			double m_a2 = SOS[6 * i + 5];
+			double w = Xi - m_a1 * z0[i] - m_a2 * z1[i];
+			Xi = m_b0 * w + m_b1 * z0[i] + m_b2 * z1[i];
+			z1[i] = z0[i];
+			z0[i] = w;
+		}
+	}
+	return (float)Xi;
+}
+static float NSEEL_CGEN_CALL SineSInit(float* blocks, float* start, float* freq, float* fs)
+{
+	const size_t strSize = sizeof(SineS_S) / sizeof(float) + 1;
+	int32_t offs1 = (int32_t)(*start + NSEEL_CLOSEFACTOR);
+	float* fir = __NSEEL_RAMAlloc(blocks, (uint64_t)offs1);
+	SineS_S* filt = (SineS_S*)fir;
+	*filt = InitSineS_SGenerator(*freq, *fs);
+	return strSize;
+}
+static float NSEEL_CGEN_CALL SineSProcessReal(float* blocks, float* start)
+{
+	int32_t offs1 = (int32_t)(*start + NSEEL_CLOSEFACTOR);
+	SineS_S* filt = __NSEEL_RAMAlloc(blocks, (uint64_t)offs1);
+	return (float)SineS_SGetSample(filt);
+}
+static float NSEEL_CGEN_CALL SineSProcessCplx(float* blocks, float* start, float* state)
+{
+	int32_t offs1 = (int32_t)(*start + NSEEL_CLOSEFACTOR);
+	uint32_t offs2 = (uint32_t)(*state + NSEEL_CLOSEFACTOR);
+	float* out = (float*)__NSEEL_RAMAlloc(blocks, (uint64_t)offs2);
+	SineS_S* filt = __NSEEL_RAMAlloc(blocks, (uint64_t)offs1);
+	double re, im;
+	ComplexExponentialS_SGetSample(filt, &re, &im);
+	out[0] = re;
+	out[1] = im;
+}
+static float NSEEL_CGEN_CALL SVFInit(float* blocks, float* start)
+{
+	const size_t strSize = sizeof(StateVariable2ndOrder) / sizeof(float) + 1;
+	int32_t offs1 = (int32_t)(*start + NSEEL_CLOSEFACTOR);
+	StateVariable2ndOrder* state = __NSEEL_RAMAlloc(blocks, (uint64_t)offs1);
+	InitStateVariable2ndOrder(state);
+	return strSize;
+}
+static float NSEEL_CGEN_CALL SVFSetParam(void* opaque, INT_PTR num_param, float** parms)
+{
+	compileContext* c = (compileContext*)opaque;
+	float* blocks = c->ram_state;
+	int32_t offs1 = (int32_t)(*parms[0] + NSEEL_CLOSEFACTOR);
+	StateVariable2ndOrder* state = __NSEEL_RAMAlloc(blocks, offs1);
+	float fs = *parms[1];
+	float cutoff = *parms[2];
+	float Q = *parms[3];
+	refreshStateVariable2ndOrder(state, fs, cutoff, Q);
+	return 0;
+}
+static float NSEEL_CGEN_CALL SVFProcess(float* blocks, float* start, float* x, float* fMode)
+{
+	int32_t offs1 = (int32_t)(*start + NSEEL_CLOSEFACTOR);
+	StateVariable2ndOrder* state = __NSEEL_RAMAlloc(blocks, (uint64_t)offs1);
+	int filterMode = (int32_t)(*fMode + NSEEL_CLOSEFACTOR);
+	return (float)ProcessStateVariable2ndOrder(state, *x, filterMode);
+}
+static float NSEEL_CGEN_CALL SVFPeakProcess(float* blocks, float* start, float* x, float* gain)
+{
+	int32_t offs1 = (int32_t)(*start + NSEEL_CLOSEFACTOR);
+	StateVariable2ndOrder* state = __NSEEL_RAMAlloc(blocks, (uint64_t)offs1);
+	return (float)ProcessPeakStateVariable2ndOrder(state, *x, *gain);
+}
+static float NSEEL_CGEN_CALL LatticeBurgLPCInit(float* blocks, float* start, float* P, float* lam)
+{
+	const size_t strSize = sizeof(burgSampleBasedLPC) / sizeof(float) + 1;
+	int32_t offs1 = (int32_t)(*start + NSEEL_CLOSEFACTOR);
+	burgSampleBasedLPC* state = __NSEEL_RAMAlloc(blocks, (uint64_t)offs1);
+	initBurgSampleBasedLPC(state, (int32_t)(*P + NSEEL_CLOSEFACTOR), *lam);
+	return strSize;
+}
+static float NSEEL_CGEN_CALL LatticeBurgLPC1chProcess(void* opaque, INT_PTR num_param, float** parms)
+{
+	compileContext* c = (compileContext*)opaque;
+	float* blocks = c->ram_state;
+	int32_t offs1 = (int32_t)(*parms[0] + NSEEL_CLOSEFACTOR);
+	burgSampleBasedLPC* state = __NSEEL_RAMAlloc(blocks, offs1);
+	int32_t offs2 = (int32_t)(*parms[1] + NSEEL_CLOSEFACTOR);
+	float* input = __NSEEL_RAMAlloc(blocks, offs2);
+	int32_t offs3 = (int32_t)(*parms[2] + NSEEL_CLOSEFACTOR);
+	float* output = __NSEEL_RAMAlloc(blocks, offs3);
+	processBurgSampleBasedLPC1ch(state, input[0], input[1], &output[0]);
+	return 0;
+}
+static float NSEEL_CGEN_CALL LatticeBurgLPC2chProcess(void* opaque, INT_PTR num_param, float** parms)
+{
+	compileContext* c = (compileContext*)opaque;
+	float* blocks = c->ram_state;
+	int32_t offs1 = (int32_t)(*parms[0] + NSEEL_CLOSEFACTOR);
+	burgSampleBasedLPC* state = __NSEEL_RAMAlloc(blocks, offs1);
+	int32_t offs2 = (int32_t)(*parms[1] + NSEEL_CLOSEFACTOR);
+	float* input = __NSEEL_RAMAlloc(blocks, offs2);
+	int32_t offs3 = (int32_t)(*parms[2] + NSEEL_CLOSEFACTOR);
+	float* output = __NSEEL_RAMAlloc(blocks, offs3);
+	processBurgSampleBasedLPC2ch(state, input[0], input[1], input[2], &output[0], &output[1]);
+	return 0;
 }
 #define NRAND 624
 #define MRAND 397
@@ -4559,6 +4807,9 @@ static functionType fnTable1[] = {
   {"sprintf",_asm_generic2parm_retd,_asm_generic2parm_retd_end,1 | BIF_TAKES_VARPARM | BIF_RETURNSONSTACK,{(void**)&_eel_sprintf},NSEEL_PProc_THIS},
   {"resetSysMemRegion",_asm_generic1parm_retd,_asm_generic1parm_retd_end,1 | BIF_TAKES_VARPARM_EX | BIF_RETURNSONSTACK,{(void**)&_eel_resetSysMemRegion},NSEEL_PProc_THIS},
   {"importFLTFromStr",_asm_generic2parm_retd,_asm_generic2parm_retd_end,2 | BIF_RETURNSONSTACK,{(void**)&_eel_importFloatArrayFromString},NSEEL_PProc_THIS},
+  {"importBinaryDoubleFromStr",_asm_generic2parm_retd,_asm_generic2parm_retd_end,2 | BIF_RETURNSONSTACK,{(void**)&_eel_importDoubleArrayFromString},NSEEL_PProc_THIS},
+  {"importFLTFromFile",_asm_generic2parm_retd,_asm_generic2parm_retd_end,2 | BIF_RETURNSONSTACK,{(void**)&_eel_importFloatArrayFromFile},NSEEL_PProc_THIS},
+  {"importBinaryDoubleFromFile",_asm_generic2parm_retd,_asm_generic2parm_retd_end,2 | BIF_RETURNSONSTACK,{(void**)&_eel_importDoubleArrayFromFile},NSEEL_PProc_THIS},
   {"arburgCheckMemoryRequirement",_asm_generic2parm_retd,_asm_generic2parm_retd_end,2 | BIF_RETURNSONSTACK,{(void**)&arburgCheckMemoryRequirement},NSEEL_PProc_RAM},
   {"arburgTrainModel",_asm_generic2parm_retd,_asm_generic2parm_retd_end,4 | BIF_TAKES_VARPARM | BIF_RETURNSONSTACK,{(void**)&arburgTrainModel},NSEEL_PProc_THIS},
   {"arburgPredictBackward",_asm_generic1parm_retd,_asm_generic1parm_retd_end,1 | BIF_RETURNSONSTACK,{(void**)&arburgPredictBackward},NSEEL_PProc_RAM},
@@ -4590,6 +4841,18 @@ static functionType fnTable1[] = {
   {"PolyphaseFilterbankSynthesisStereo",_asm_generic2parm_retd,_asm_generic2parm_retd_end,1 | BIF_TAKES_VARPARM | BIF_RETURNSONSTACK,{(void**)&PolyphaseFilterbankSynthesisStereo},NSEEL_PProc_THIS},
   {"FIRInit",_asm_generic2parm_retd,_asm_generic2parm_retd_end,2 | BIF_RETURNSONSTACK,{(void**)&FIRInit},NSEEL_PProc_RAM},
   {"FIRProcess",_asm_generic3parm_retd,_asm_generic3parm_retd_end,3 | BIF_RETURNSONSTACK,{(void**)&FIRProcess},NSEEL_PProc_RAM},
+  {"IIRSOSInit",_asm_generic3parm_retd,_asm_generic3parm_retd_end,3 | BIF_RETURNSONSTACK,{(void**)&IIRSOSInit},NSEEL_PProc_RAM},
+  {"IIRSOSProcess",_asm_generic3parm_retd,_asm_generic3parm_retd_end,3 | BIF_RETURNSONSTACK,{(void**)&IIRSOSProcess},NSEEL_PProc_RAM},
+  {"SineSInit",_asm_generic3parm_retd,_asm_generic3parm_retd_end,3 | BIF_RETURNSONSTACK,{(void**)&SineSInit},NSEEL_PProc_RAM},
+  {"SineSProcessReal",_asm_generic1parm_retd,_asm_generic1parm_retd_end,1 | BIF_RETURNSONSTACK,{(void**)&SineSProcessReal},NSEEL_PProc_RAM},
+  {"SineSProcessCplx",_asm_generic2parm_retd,_asm_generic2parm_retd_end,2 | BIF_RETURNSONSTACK,{(void**)&SineSProcessCplx},NSEEL_PProc_RAM },
+  {"SVFInit",_asm_generic1parm_retd,_asm_generic1parm_retd_end,1 | BIF_RETURNSONSTACK,{(void**)&SVFInit},NSEEL_PProc_RAM },
+  {"SVFSetParam",_asm_generic2parm_retd,_asm_generic2parm_retd_end,4 | BIF_TAKES_VARPARM_EX | BIF_RETURNSONSTACK,{(void**)&SVFSetParam},NSEEL_PProc_THIS },
+  {"SVFProcess",_asm_generic3parm_retd,_asm_generic3parm_retd_end,3 | BIF_RETURNSONSTACK,{(void**)&SVFProcess},NSEEL_PProc_RAM },
+  {"SVFPeakProcess",_asm_generic3parm_retd,_asm_generic3parm_retd_end,3 | BIF_RETURNSONSTACK,{(void**)&SVFPeakProcess},NSEEL_PProc_RAM },
+  {"LatticeBurgLPCInit",_asm_generic3parm_retd,_asm_generic3parm_retd_end,3 | BIF_RETURNSONSTACK,{(void**)&LatticeBurgLPCInit},NSEEL_PProc_RAM },
+  {"LatticeBurgLPC1chProcess",_asm_generic2parm_retd,_asm_generic2parm_retd_end,3 | BIF_TAKES_VARPARM_EX | BIF_RETURNSONSTACK,{(void**)&LatticeBurgLPC1chProcess},NSEEL_PProc_THIS },
+  {"LatticeBurgLPC2chProcess",_asm_generic2parm_retd,_asm_generic2parm_retd_end,3 | BIF_TAKES_VARPARM_EX | BIF_RETURNSONSTACK,{(void**)&LatticeBurgLPC2chProcess},NSEEL_PProc_THIS },
   {"fractionalDelayLineInit",_asm_generic2parm_retd,_asm_generic2parm_retd_end,2 | BIF_RETURNSONSTACK,{(void**)&fractionalDelayLineInit},NSEEL_PProc_RAM},
   {"fractionalDelayLineClear",_asm_generic1parm_retd,_asm_generic1parm_retd_end,1 | BIF_RETURNSONSTACK,{(void**)&fractionalDelayLineClear},NSEEL_PProc_RAM},
   {"fractionalDelayLineSetDelay",_asm_generic2parm_retd,_asm_generic2parm_retd_end,2 | BIF_RETURNSONSTACK,{(void**)&fractionalDelayLineSetDelay},NSEEL_PProc_RAM},

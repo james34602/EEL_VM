@@ -208,10 +208,13 @@ void LiveProgrammableDSP::processBlock(AudioBuffer<float>& buffer, MidiBuffer&)
 {
 	// number of samples per buffer
 	const int n = buffer.getNumSamples();
-	// input channels
-	const float *inputs[JucePlugin_MaxNumInputChannels] = { buffer.getReadPointer(0), buffer.getReadPointer(1) };
-	// output channels
-	float* const outputs[JucePlugin_MaxNumInputChannels] = { buffer.getWritePointer(0), buffer.getWritePointer(1) };
+	const float *inputs[JucePlugin_MaxNumInputChannels];
+	float* outputs[JucePlugin_MaxNumInputChannels];
+	for (int i = 0; i < JucePlugin_MaxNumInputChannels; i++)
+	{
+		inputs[i] = buffer.getReadPointer(i);
+		outputs[i] = buffer.getWritePointer(i);
+	}
 	if (compileSucessfully == 1)
 	{
 		ScopedLock lock(criticalSection);
@@ -309,7 +312,6 @@ void LiveProgrammableDSP::setStateInformation(const void* data, int sizeInBytes)
 	decompressed = (unsigned char*)realloc(decompressed, sz + 1);
 	decompressed[sz] = 0;
 	restoredText = String(CharPointer_UTF8((char*)decompressed));
-//	restoredText = stream.readString();
 	free(decompressed);
 	playButtonClicked(restoredText);
 }
